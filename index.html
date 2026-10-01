@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#eef5fc">
+<title>Unit 10 – Relationships | Interactive Learning App</title>
+<style>
+:root{
+  --bg:#eef5fc; --bg2:#f8fbff; --card:#ffffff;
+  --primary:#3f7cc4; --primary-dark:#2f5f9c; --primary-light:#dcebfb;
+  --accent:#7fb2e8; --text:#1c2b3a; --soft:#5a6b7d; --border:#dbe7f4;
+  --ok:#2f9e6b; --ok-bg:#e6f7ef; --bad:#d1596a; --bad-bg:#fdecef;
+  --warn:#b9821a; --warn-bg:#fdf5e3;
+  --radius:16px; --shadow:0 4px 18px rgba(63,124,196,.09);
+  --shadow-lg:0 12px 40px rgba(28,43,58,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+button,input,textarea,select{font-family:inherit;font-size:inherit}
+h1,h2,h3,h4{line-height:1.25;margin:0 0 .5rem}
+h1{font-size:clamp(1.5rem,4vw,2.1rem)}
+h2{font-size:clamp(1.15rem,3vw,1.5rem)}
+h3{font-size:1.08rem}
+p{margin:0 0 .7rem}
+a{color:var(--primary)}
+.muted{color:var(--soft);font-size:.92rem}
+.small{font-size:.85rem}
+
+/* ---------- LAYOUT ---------- */
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:252px;flex:0 0 252px;background:linear-gradient(180deg,#ffffff,#f2f8ff);
+  border-right:1px solid var(--border);padding:16px 12px;position:sticky;top:0;height:100vh;
+  overflow-y:auto;z-index:60;
+}
+.brand{display:flex;gap:10px;align-items:center;padding:6px 8px 16px}
+.brand .logo{
+  width:40px;height:40px;border-radius:12px;flex:0 0 40px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  display:grid;place-items:center;color:#fff;font-weight:700;font-size:1.1rem;
+}
+.brand b{display:block;font-size:.95rem;line-height:1.2}
+.brand span{font-size:.75rem;color:var(--soft)}
+.navitem{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:11px 12px;border:0;background:transparent;border-radius:12px;
+  color:var(--text);cursor:pointer;font-size:.95rem;margin-bottom:2px;
+  transition:background .15s,color .15s;min-height:44px;
+}
+.navitem:hover{background:var(--primary-light)}
+.navitem.active{background:var(--primary);color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(63,124,196,.28)}
+.navitem .ic{width:22px;text-align:center;font-size:1.05rem;flex:0 0 22px}
+.navitem .cnt{margin-left:auto;font-size:.72rem;background:var(--primary-light);color:var(--primary-dark);border-radius:999px;padding:1px 7px}
+.navitem.active .cnt{background:rgba(255,255,255,.28);color:#fff}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{
+  position:sticky;top:0;z-index:50;background:rgba(248,251,255,.92);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
+  padding:10px 16px;display:flex;gap:10px;align-items:center;
+}
+.menu-btn{display:none}
+.searchwrap{flex:1;max-width:520px;position:relative}
+.searchwrap input{
+  width:100%;padding:11px 14px 11px 38px;border-radius:12px;border:1px solid var(--border);
+  background:#fff;outline:none;min-height:44px;
+}
+.searchwrap input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.searchwrap .si{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--soft)}
+.topbar .uk{
+  font-size:.78rem;color:var(--primary-dark);background:var(--primary-light);
+  padding:6px 10px;border-radius:999px;white-space:nowrap;font-weight:600;
+}
+.content{padding:20px;max-width:1180px;width:100%;margin:0 auto;flex:1}
+.view{display:none;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- CARDS ---------- */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow);margin-bottom:16px;
+}
+.hero{
+  background:linear-gradient(135deg,#e4f0fd,#f7fbff);
+  border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:18px;
+}
+.eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:.72rem;font-weight:700;color:var(--primary);margin-bottom:6px}
+.lead{color:var(--soft);max-width:62ch}
+.grid{display:grid;gap:14px}
+.stats{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.quick{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.stat .k{font-size:.78rem;color:var(--soft);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.stat .v{font-size:1.45rem;font-weight:700;color:var(--primary-dark);margin-top:4px}
+.stat .s{font-size:.8rem;color:var(--soft)}
+.qbtn{
+  background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;text-align:left;
+  cursor:pointer;box-shadow:var(--shadow);transition:transform .15s,border-color .15s;min-height:88px;
+}
+.qbtn:hover{transform:translateY(-2px);border-color:var(--accent)}
+.qbtn b{display:block;font-size:1rem;margin-bottom:2px}
+.qbtn span{font-size:.84rem;color:var(--soft)}
+
+/* ---------- PROGRESS BARS ---------- */
+.bigbar{height:14px;background:var(--primary-light);border-radius:999px;overflow:hidden;margin:8px 0}
+.bigbar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:999px;transition:width .4s ease}
+.minibar{height:8px;background:var(--primary-light);border-radius:999px;overflow:hidden;margin-top:6px}
+.minibar>span{display:block;height:100%;background:var(--primary);border-radius:999px;transition:width .3s}
+
+/* ---------- BUTTONS ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 15px;border-radius:11px;border:1px solid var(--border);background:#fff;
+  color:var(--text);cursor:pointer;font-weight:600;font-size:.9rem;min-height:44px;
+  transition:background .15s,transform .1s,border-color .15s;
+}
+.btn:hover{background:var(--primary-light);border-color:var(--accent)}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn.primary:hover{background:var(--primary-dark)}
+.btn.ok{background:var(--ok-bg);color:var(--ok);border-color:#bfe7d3}
+.btn.bad{background:var(--bad-bg);color:var(--bad);border-color:#f4c9d0}
+.btn.ghost{background:transparent}
+.btn.icon{padding:10px;min-width:44px}
+.btn.sm{padding:7px 11px;min-height:38px;font-size:.84rem;border-radius:9px}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---------- LESSON ---------- */
+.dialogue{background:var(--bg2);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:14px 16px;margin:12px 0}
+.dialogue p{margin:0 0 .45rem}
+.dialogue .spk{font-weight:700;color:var(--primary-dark)}
+.notes{background:#fffdf5;border:1px dashed #e8d9a8;border-radius:12px;padding:14px;margin-top:12px}
+.notes p{font-size:.92rem;margin:0 0 .5rem}
+.notes p:last-child{margin-bottom:0}
+.notes sup{color:var(--primary-dark);font-weight:700}
+.vw{
+  background:linear-gradient(180deg,#eaf4ff,#f7fbff);border-bottom:2px solid var(--accent);
+  cursor:pointer;padding:1px 4px;border-radius:5px;font-weight:600;color:var(--primary-dark);
+  transition:background .15s;
+}
+.vw:hover{background:var(--primary-light)}
+table.like{width:100%;border-collapse:collapse;margin:14px 0;font-size:.94rem;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+table.like th,table.like td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}
+table.like th{background:var(--primary-light);font-size:.85rem;text-transform:uppercase;letter-spacing:.04em;color:var(--primary-dark)}
+table.like td:first-child{font-weight:600}
+.idiomlist{list-style:none;padding:0;margin:10px 0}
+.idiomlist li{
+  background:#fff;border:1px solid var(--border);border-left:4px solid var(--accent);
+  border-radius:0 12px 12px 0;padding:12px 14px;margin-bottom:10px;
+}
+.idiomlist li b{color:var(--primary-dark)}
+.gloss{color:var(--soft);font-size:.9rem}
+.mistakebox{background:var(--warn-bg);border:1px solid #edd9a8;border-radius:12px;padding:14px;margin-top:10px}
+.mistakebox .x{color:var(--bad);font-weight:700}
+.mistakebox .y{color:var(--ok);font-weight:700}
+pre.raw{
+  white-space:pre-wrap;word-wrap:break-word;background:#fff;border:1px solid var(--border);
+  border-radius:14px;padding:18px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.86rem;line-height:1.62;box-shadow:var(--shadow);overflow-x:auto;
+}
+
+/* ---------- VOCAB ---------- */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.toolbar input[type=text]{
+  flex:1;min-width:200px;padding:11px 14px;border-radius:12px;border:1px solid var(--border);outline:none;min-height:44px;background:#fff;
+}
+.toolbar input[type=text]:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  padding:7px 13px;border-radius:999px;border:1px solid var(--border);background:#fff;cursor:pointer;
+  font-size:.83rem;font-weight:600;color:var(--soft);min-height:36px;
+}
+.chip:hover{border-color:var(--accent);color:var(--primary-dark)}
+.chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.vgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(255px,1fr))}
+.vcard{
+  background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:6px;transition:transform .15s,border-color .15s;
+}
+.vcard:hover{transform:translateY(-2px);border-color:var(--accent)}
+.vcard .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.vcard h4{margin:0;font-size:1rem;color:var(--primary-dark)}
+.vcard .ipa{font-family:ui-monospace,Menlo,monospace;font-size:.83rem;color:var(--soft);margin:0}
+.vcard .vi{margin:0;font-size:.92rem;color:var(--text);font-weight:600}
+.vcard .en{margin:0;font-size:.83rem;color:var(--soft)}
+.badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.badge.lvl{background:var(--primary-light);color:var(--primary-dark)}
+.badge.B2{background:#e8e6fb;color:#5b4fb8}
+.badge.B1{background:var(--primary-light);color:var(--primary-dark)}
+.badge.A2{background:#e6f7ef;color:#2f7a58}
+.badge.known{background:var(--ok-bg);color:var(--ok)}
+.badge.review{background:var(--warn-bg);color:var(--warn)}
+.vcard .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+
+/* ---------- MODAL ---------- */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(28,43,58,.45);display:flex;align-items:center;
+  justify-content:center;padding:16px;z-index:200;backdrop-filter:blur(2px);
+}
+.modal-bg[hidden]{display:none}
+.modal{
+  background:#fff;border-radius:18px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;
+  padding:22px;box-shadow:var(--shadow-lg);position:relative;animation:pop .2s ease;
+}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+.modal-close{
+  position:absolute;top:10px;right:12px;border:0;background:transparent;font-size:1.6rem;line-height:1;
+  cursor:pointer;color:var(--soft);width:40px;height:40px;border-radius:10px;
+}
+.modal-close:hover{background:var(--primary-light);color:var(--primary-dark)}
+.mrow{border-top:1px solid var(--border);padding-top:10px;margin-top:10px}
+.mrow:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.mrow .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);font-weight:700}
+
+/* ---------- FLASHCARDS ---------- */
+.fc-modes{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.fc-stage{perspective:1400px;margin:8px 0 16px}
+.fc-card{
+  position:relative;width:100%;min-height:290px;transform-style:preserve-3d;
+  transition:transform .5s cubic-bezier(.4,.2,.2,1);cursor:pointer;
+}
+.fc-card.flipped{transform:rotateY(180deg)}
+.fc-face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:20px;padding:24px;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border);
+  overflow-y:auto;
+}
+.fc-front{background:linear-gradient(150deg,#e8f2fd,#ffffff)}
+.fc-back{background:linear-gradient(150deg,#f4f9ff,#ffffff);transform:rotateY(180deg);align-items:flex-start;text-align:left}
+.fc-front .w{font-size:clamp(1.4rem,4.5vw,2rem);font-weight:800;color:var(--primary-dark);margin-bottom:6px}
+.fc-front .ip{font-family:ui-monospace,Menlo,monospace;color:var(--soft);font-size:.95rem}
+.fc-back .w2{font-size:1.1rem;font-weight:800;color:var(--primary-dark);margin-bottom:10px}
+.fc-back .blk{margin-bottom:9px;width:100%}
+.fc-back .blk .l{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);font-weight:700}
+.fc-back .blk .v{font-size:.95rem}
+.fc-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.fc-controls{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---------- EXERCISES ---------- */
+.ex-item{border-top:1px dashed var(--border);padding:14px 0 6px;margin-top:10px}
+.ex-item:first-of-type{border-top:0;margin-top:0}
+.ex-prompt{font-weight:600;margin-bottom:8px;display:flex;gap:8px}
+.ex-num{
+  flex:0 0 26px;height:26px;border-radius:8px;background:var(--primary-light);color:var(--primary-dark);
+  display:grid;place-items:center;font-size:.8rem;font-weight:700;margin-top:2px;
+}
+.ex-row{display:flex;gap:8px;flex-wrap:wrap}
+.ex-input,.ex-area{
+  flex:1;min-width:200px;padding:11px 13px;border-radius:11px;border:1px solid var(--border);
+  outline:none;background:#fff;min-height:44px;
+}
+.ex-area{min-height:80px;resize:vertical;font-family:inherit}
+.ex-input:focus,.ex-area:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.ex-fb{margin-top:10px;font-size:.9rem}
+.fb{padding:11px 13px;border-radius:11px;border:1px solid transparent}
+.fb.ok{background:var(--ok-bg);border-color:#bfe7d3;color:#1f6f4c}
+.fb.bad{background:var(--bad-bg);border-color:#f4c9d0;color:#a13a4c}
+.fb.warn{background:var(--warn-bg);border-color:#edd9a8;color:#8a6212}
+.fb .ans{font-weight:700}
+.blankinput{
+  display:inline-block;width:130px;padding:4px 8px;border:0;border-bottom:2px solid var(--accent);
+  background:#f4f9ff;border-radius:6px 6px 0 0;outline:none;font-weight:700;color:var(--primary-dark);
+  text-align:center;margin:0 3px;min-height:32px;
+}
+.blankinput:focus{background:var(--primary-light);border-bottom-color:var(--primary)}
+.msgblock{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:10px;font-size:.95rem}
+.refbox{background:#f6f9ff;border:1px dashed var(--accent);border-radius:11px;padding:11px 13px;margin-top:8px;font-size:.88rem;color:var(--soft)}
+
+/* ---------- QUIZ ---------- */
+.opt{
+  display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;padding:13px 15px;
+  border-radius:12px;border:1px solid var(--border);background:#fff;cursor:pointer;margin-bottom:9px;
+  min-height:48px;font-size:.95rem;transition:background .15s,border-color .15s;
+}
+.opt:hover{border-color:var(--accent);background:var(--bg2)}
+.opt .lt{
+  flex:0 0 26px;height:26px;border-radius:8px;background:var(--primary-light);color:var(--primary-dark);
+  display:grid;place-items:center;font-weight:700;font-size:.8rem;
+}
+.opt.correct{background:var(--ok-bg);border-color:#bfe7d3}
+.opt.correct .lt{background:var(--ok);color:#fff}
+.opt.wrong{background:var(--bad-bg);border-color:#f4c9d0}
+.opt.wrong .lt{background:var(--bad);color:#fff}
+.opt[disabled]{cursor:default}
+.qprog{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+
+/* ---------- MISTAKES ---------- */
+.mistake{background:#fff;border:1px solid var(--border);border-left:4px solid var(--bad);border-radius:0 14px 14px 0;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.mistake .q{font-weight:700;margin-bottom:8px}
+.mistake .u{color:var(--bad)}
+.mistake .c{color:var(--ok)}
+
+/* ---------- MISC ---------- */
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:#1c2b3a;color:#fff;
+  padding:11px 18px;border-radius:999px;font-size:.87rem;z-index:400;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.backdrop{position:fixed;inset:0;background:rgba(28,43,58,.4);z-index:55;display:none}
+.backdrop.show{display:block}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+
+@media (max-width:900px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform .25s ease;box-shadow:var(--shadow-lg)}
+  .sidebar.open{transform:none}
+  .menu-btn{display:inline-flex}
+  .content{padding:14px}
+  .topbar{padding:9px 12px}
+  .topbar .uk{display:none}
+  .fc-card{min-height:330px}
+  .vgrid{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media (min-width:901px) and (max-width:1200px){
+  .vgrid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:420px){
+  .stats{grid-template-columns:1fr}
+  .fc-face{padding:18px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar" aria-label="Điều hướng chính">
+    <div class="brand">
+      <div class="logo">10</div>
+      <div>
+        <b>Relationships</b>
+        <span>Unit 10 · B1–B2</span>
+      </div>
+    </div>
+    <nav id="nav">
+      <button class="navitem active" data-view="home"      aria-label="Trang chủ"><span class="ic">🏠</span>Home</button>
+      <button class="navitem" data-view="lesson"    aria-label="Bài học"><span class="ic">📚</span>Lesson</button>
+      <button class="navitem" data-view="vocab"     aria-label="Từ vựng"><span class="ic">🧠</span>Vocabulary <span class="cnt" id="cntVocab">0</span></button>
+      <button class="navitem" data-view="flash"     aria-label="Thẻ ghi nhớ"><span class="ic">🃏</span>Flashcards</button>
+      <button class="navitem" data-view="pron"      aria-label="Phát âm"><span class="ic">🔊</span>Pronunciation</button>
+      <button class="navitem" data-view="exercises" aria-label="Bài tập"><span class="ic">📝</span>Exercises</button>
+      <button class="navitem" data-view="quiz"      aria-label="Trắc nghiệm"><span class="ic">🎯</span>Quiz</button>
+      <button class="navitem" data-view="mistakes"  aria-label="Lỗi sai"><span class="ic">❌</span>Mistakes <span class="cnt" id="cntMistakes">0</span></button>
+      <button class="navitem" data-view="progress"  aria-label="Tiến độ"><span class="ic">📊</span>Progress</button>
+      <button class="navitem" data-view="original"  aria-label="Bài học gốc"><span class="ic">📖</span>Original Lesson</button>
+    </nav>
+  </aside>
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- ================= MAIN ================= -->
+  <div class="main">
+    <header class="topbar">
+      <button class="btn icon menu-btn" id="menuBtn" aria-label="Mở menu">☰</button>
+      <div class="searchwrap">
+        <span class="si" aria-hidden="true">🔍</span>
+        <input type="text" id="globalSearch" placeholder="Search Unit 10 — từ vựng, cụm từ, nghĩa, ví dụ..." aria-label="Tìm kiếm trong Unit 10">
+      </div>
+      <span class="uk">🇬🇧 British English</span>
+    </header>
+
+    <main class="content" id="content">
+
+      <!-- ============ HOME ============ -->
+      <section class="view active" id="view-home">
+        <div class="hero">
+          <p class="eyebrow">English Vocabulary in Use · B1–B2</p>
+          <h1>Unit 10 — Relationships</h1>
+          <p class="lead">Học từ vựng, cụm từ và thành ngữ về các mối quan hệ: bạn bè, gia đình, quan hệ trên mạng xã hội, yêu – ghét và hẹn hò. Toàn bộ nội dung gốc của bài học được giữ nguyên trong mục <b>📖 Original Lesson</b>.</p>
+        </div>
+
+        <div class="card">
+          <h2>Overall Progress</h2>
+          <div class="bigbar"><span id="homeOverallBar"></span></div>
+          <p class="muted"><b id="homeOverallPct">0%</b> hoàn thành · Tiến độ được lưu tự động trên thiết bị của bạn.</p>
+        </div>
+
+        <div class="grid stats" id="homeStats"></div>
+
+        <h2 style="margin-top:22px">Bắt đầu học</h2>
+        <div class="grid quick" id="homeQuick"></div>
+      </section>
+
+      <!-- ============ LESSON ============ -->
+      <section class="view" id="view-lesson">
+        <h1>📚 Lesson — Unit 10 Relationships</h1>
+        <p class="muted">Bấm vào các <span class="vw">từ / cụm từ được tô sáng</span> để xem nghĩa, phiên âm IPA, phát âm British English và ví dụ.</p>
+
+        <!-- A -->
+        <div class="card">
+          <h2>A · Types of relationship</h2>
+          <div class="dialogue">
+            <p><span class="spk">ANITA:</span> Are you and Holly best friends?</p>
+            <p><span class="spk">LUCY:</span> She’s a <span class="vw" data-w="good-friend">good friend</span> – she’s not my best friend.</p>
+            <p><span class="spk">ANITA:</span> But she’s more than just a <span class="vw" data-w="casual-acquaintance">casual acquaintance</span>¹, right?</p>
+            <p><span class="spk">LUCY:</span> Oh, yes. We were <span class="vw" data-w="housemate">housemates</span>² at university.</p>
+            <p><span class="spk">ANITA:</span> Really? So how did you first meet her?</p>
+            <p><span class="spk">LUCY:</span> I met her through my <span class="vw" data-w="ex">ex</span>³, Kallum. She wasn’t in a <span class="vw" data-w="steady-relationship">steady</span>⁴ relationship with anyone at the time, and she was looking for someone to share a room.</p>
+            <p><span class="spk">ANITA:</span> Uh-huh. Is that Kallum who’s now Olivia’s <span class="vw" data-w="partner">partner</span>⁵?</p>
+            <p><span class="spk">LUCY:</span> Yeah, that’s the one. They’re not just partners, they’re married and they’re <span class="vw" data-w="colleague">colleagues</span> too. They’re saving to buy a house now, so Kallum’s living with his <span class="vw" data-w="parents-in-law">parents-in-law</span>⁶ at the moment.</p>
+          </div>
+
+          <div class="notes">
+            <p><sup>1</sup> a person you have met but you don’t know well</p>
+            <p><sup>2</sup> <span class="vw" data-w="mate">mate</span> [friend; infml] is used in compound nouns to describe a person you share something with, e.g. <span class="vw" data-w="classmate">classmate</span>, <span class="vw" data-w="roommate">roommate</span>, <span class="vw" data-w="workmate">workmate</span>, <span class="vw" data-w="flatmate">flatmate</span>, <span class="vw" data-w="housemate">housemate</span>. <b>Workmate</b> is common in non-professional or informal contexts; <b>colleague</b> is common among professional people, and sounds more formal.</p>
+            <p><sup>3</sup> ex- can be used without (informally) or with another word: ex-girlfriend, ex-husband, etc.</p>
+            <p><sup>4</sup> fixed and not changing suddenly</p>
+            <p><sup>5</sup> partner is used for someone you live with but are not married to, or for a business relationship where you share the ownership or running of a company</p>
+            <p><sup>6</sup> his wife’s parents (his <span class="vw" data-w="mother-in-law">mother-in-law</span> and <span class="vw" data-w="mother-in-law">father-in-law</span>)</p>
+          </div>
+        </div>
+
+        <!-- B -->
+        <div class="card">
+          <h2>B · Internet relationships</h2>
+          <div class="dialogue" style="border-left-color:var(--primary)">
+            <p class="muted" style="font-family:ui-monospace,monospace">MyBook | Home&nbsp; Profile&nbsp; Friends&nbsp; Inbox</p>
+            <p>If you join a <span class="vw" data-w="social-network">social network</span>, you can <span class="vw" data-w="acquire-friends">acquire friends</span> (people you share personal information with) and <span class="vw" data-w="build-up">build up</span> your list of <span class="vw" data-w="contacts">contacts</span>. You can <span class="vw" data-w="invite">invite</span> people to become your friends, and you can choose to <span class="vw" data-w="accept">accept</span> new friends who invite you. You can <span class="vw" data-w="interact-with">interact with</span> your friends by <span class="vw" data-w="exchange-messages">exchanging messages</span> or <span class="vw" data-w="post-comments">posting comments</span> on their page. You can also <span class="vw" data-w="share-photos">share photos</span> and <span class="vw" data-w="tag">tag</span> your friends (name them in photos that you post). If you want to finish a relationship, you can <span class="vw" data-w="unfriend">unfriend</span> / <span class="vw" data-w="defriend">defriend</span> that person.</p>
+          </div>
+        </div>
+
+        <!-- C -->
+        <div class="card">
+          <h2>C · Liking and not liking someone</h2>
+          <table class="like">
+            <thead>
+              <tr><th>core verb</th><th>positive (stronger)</th><th>negative</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="vw" data-w="like">like</span></td><td><span class="vw" data-w="love">love</span></td><td><span class="vw" data-w="dislike">dislike</span></td></tr>
+              <tr><td></td><td><span class="vw" data-w="adore">adore</span></td><td><span class="vw" data-w="cant-stand">can't stand</span></td></tr>
+              <tr><td></td><td><span class="vw" data-w="idolise">idolise</span></td><td><span class="vw" data-w="loathe">loathe</span> /ləʊð/</td></tr>
+              <tr><td><span class="vw" data-w="respect">respect</span></td><td><span class="vw" data-w="look-up-to">look up to</span></td><td><span class="vw" data-w="look-down-on">look down on</span></td></tr>
+              <tr><td></td><td><span class="vw" data-w="admire">admire</span></td><td><span class="vw" data-w="despise">despise</span></td></tr>
+              <tr><td><span class="vw" data-w="attract">attract</span></td><td><span class="vw" data-w="fancy">fancy</span> (infml)</td><td><span class="vw" data-w="leave-someone-cold">leave someone cold</span></td></tr>
+              <tr><td><span class="vw" data-w="be-attracted-to">be attracted to</span></td><td></td><td></td></tr>
+            </tbody>
+          </table>
+          <div class="dialogue">
+            <p>She doesn’t just <span class="vw" data-w="like">like</span> Ben, she <span class="vw" data-w="idolise">idolises</span> him. I <span class="vw" data-w="cant-stand">can’t stand</span> him.</p>
+            <p>I really <span class="vw" data-w="fancy">fancy</span> Charlotte, but her friend just <span class="vw" data-w="leave-someone-cold">leaves me cold</span> / doesn’t do anything for me.</p>
+          </div>
+        </div>
+
+        <!-- D -->
+        <div class="card">
+          <h2>D · Phrases and idioms for relationships and dating</h2>
+          <ul class="idiomlist">
+            <li><b><span class="vw" data-w="get-on-well-with">get on well (with each other)</span></b> — Lily and I get on well (with each other). <span class="gloss">[have a good relationship]</span></li>
+            <li><b><span class="vw" data-w="see-eye-to-eye">see eye to eye</span></b> — Jack and Amelia don’t see eye to eye. <span class="gloss">[often argue/disagree]</span></li>
+            <li><b><span class="vw" data-w="fall-out-with">fall out with</span></b> — I’ve fallen out with my parents again. <span class="gloss">[had arguments]</span></li>
+            <li><b><span class="vw" data-w="have-an-affair">have an affair</span></b> — Carl is having an affair with his boss. <span class="gloss">[a sexual relationship, usually secret]</span></li>
+            <li><b><span class="vw" data-w="make-it-up">make it up</span></b> — Let’s try and make it up. <span class="gloss">[be friends again after a row/quarrel]</span></li>
+            <li><b><span class="vw" data-w="date">date</span></b> / <b><span class="vw" data-w="see-each-other">see each other</span></b> — He’s dating a Spanish girl. They’ve been seeing each other for a couple of months. <span class="gloss">[meeting and spending time together]</span></li>
+            <li><b><span class="vw" data-w="get-together">get together</span></b> — They met at a party and got together soon after. <span class="gloss">[started a romantic relationship]</span></li>
+          </ul>
+        </div>
+
+        <!-- Common mistakes -->
+        <div class="card">
+          <h2>Common mistakes</h2>
+          <div class="mistakebox">
+            <p><span class="x">✗</span> get friends / find friends &nbsp;→&nbsp; <span class="y">✓</span> <b>make friends</b></p>
+            <p style="margin:0">We say: People <b>make friends</b>. (NOT <i>get friends</i> or <i>find friends</i>)</p>
+            <p style="margin:.6rem 0 0">It's often difficult to <b>make</b> new friends when you move to another city. (NOT It's often difficult to <i>get friends</i> ...)</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ VOCABULARY ============ -->
+      <section class="view" id="view-vocab">
+        <h1>🧠 Vocabulary Database</h1>
+        <p class="muted">Bấm vào thẻ để xem chi tiết. Từ đã mở sẽ được tính là “đã học”.</p>
+        <div class="toolbar">
+          <input type="text" id="vocabSearch" placeholder="Tìm từ, nghĩa tiếng Việt, định nghĩa, ví dụ..." aria-label="Tìm từ vựng">
+        </div>
+        <div class="chips" id="vocabChips">
+          <button class="chip active" data-f="all">All</button>
+          <button class="chip" data-f="A2">A1/A2</button>
+          <button class="chip" data-f="B1">B1</button>
+          <button class="chip" data-f="B2">B2</button>
+          <button class="chip" data-f="D">Phrases &amp; idioms</button>
+          <button class="chip" data-f="difficult">Khó / cần ôn</button>
+        </div>
+        <p class="muted small" id="vocabCount" style="margin-top:12px"></p>
+        <div class="vgrid" id="vocabGrid"></div>
+      </section>
+
+      <!-- ============ FLASHCARDS ============ -->
+      <section class="view" id="view-flash">
+        <h1>🃏 Flashcards</h1>
+        <div class="fc-modes" id="fcModes">
+          <button class="chip active" data-m="all">All vocabulary</button>
+          <button class="chip" data-m="A">Relationships</button>
+          <button class="chip" data-m="B">Internet relationships</button>
+          <button class="chip" data-m="C">Liking &amp; disliking</button>
+          <button class="chip" data-m="D">Phrases &amp; idioms</button>
+          <button class="chip" data-m="difficult">Difficult words</button>
+        </div>
+
+        <div class="fc-meta">
+          <span class="muted" id="fcCounter">Card 0 / 0</span>
+          <span class="muted" id="fcStatus"></span>
+        </div>
+        <div class="bigbar"><span id="fcBar"></span></div>
+
+        <div class="fc-stage">
+          <div class="fc-card" id="fcCard" tabindex="0" role="button" aria-label="Lật thẻ ghi nhớ">
+            <div class="fc-face fc-front" id="fcFront">
+              <div class="w" id="fcWord">—</div>
+              <div class="ip" id="fcIpa"></div>
+            </div>
+            <div class="fc-face fc-back" id="fcBack"></div>
+          </div>
+        </div>
+
+        <div class="btnrow fc-controls">
+          <button class="btn" id="fcPrev" aria-label="Thẻ trước">‹ Previous</button>
+          <button class="btn primary" id="fcFlip" aria-label="Lật thẻ">↻ Flip</button>
+          <button class="btn" id="fcNext" aria-label="Thẻ tiếp theo">Next ›</button>
+          <button class="btn" id="fcShuffle" aria-label="Xáo trộn thẻ">🔀 Shuffle</button>
+          <button class="btn ok" id="fcKnow" aria-label="Đánh dấu đã biết">✓ Know</button>
+          <button class="btn bad" id="fcReview" aria-label="Đánh dấu cần ôn lại">↺ Need review</button>
+          <button class="btn ghost" id="fcSpeak" aria-label="Nghe phát âm">🔊 Listen</button>
+        </div>
+        <p class="muted small" style="margin-top:12px">Mẹo: dùng phím <b>←</b> <b>→</b> để chuyển thẻ, <b>Space</b> để lật thẻ.</p>
+      </section>
+
+      <!-- ============ PRONUNCIATION ============ -->
+      <section class="view" id="view-pron">
+        <h1>🔊 Pronunciation — British English 🇬🇧</h1>
+        <div class="card">
+          <p><b>Cách hoạt động:</b> App ưu tiên phát file audio thật trong thư mục <code>/audio/</code> (ví dụ <code>audio/casual-acquaintance.mp3</code>). Nếu file chưa tồn tại, app sẽ dùng giọng <b>English UK (en-GB)</b> của trình duyệt và hiển thị thông báo rõ ràng. App <b>không</b> giả vờ rằng audio thật tồn tại.</p>
+          <div class="refbox">
+            <b>Cấu trúc thư mục để thêm audio thật:</b><br>
+            <code>/audio/casual-acquaintance.mp3</code><br>
+            <code>/audio/get-on-well-with.mp3</code><br>
+            <code>/audio/see-eye-to-eye.mp3</code><br>
+            … (tên file = <code>id</code> của từ trong database)
+          </div>
+        </div>
+        <div class="toolbar">
+          <input type="text" id="pronSearch" placeholder="Tìm từ để nghe phát âm..." aria-label="Tìm từ để nghe phát âm">
+        </div>
+        <div id="pronList"></div>
+      </section>
+
+      <!-- ============ EXERCISES ============ -->
+      <section class="view" id="view-exercises">
+        <h1>📝 Exercises 10.1 – 10.6</h1>
+        <p class="muted">Làm bài trực tiếp trên web. Sau khi bấm <b>Check</b>, bạn sẽ thấy đáp án, giải thích và giải thích tiếng Việt.</p>
+        <div class="card">
+          <h3>Practice Mode</h3>
+          <p class="muted small">Chọn phần muốn luyện tập:</p>
+          <div class="btnrow" id="exFilterRow">
+            <button class="btn sm primary" data-exf="all">Practice All</button>
+            <button class="btn sm" data-exf="10.1">10.1</button>
+            <button class="btn sm" data-exf="10.2">10.2</button>
+            <button class="btn sm" data-exf="10.3">10.3</button>
+            <button class="btn sm" data-exf="10.4">10.4</button>
+            <button class="btn sm" data-exf="10.5">10.5</button>
+            <button class="btn sm" data-exf="10.6">10.6</button>
+          </div>
+        </div>
+        <div id="exWrap"></div>
+      </section>
+
+      <!-- ============ QUIZ ============ -->
+      <section class="view" id="view-quiz">
+        <h1>🎯 Quiz Mode</h1>
+        <div id="quizIntro" class="card">
+          <h3>40+ câu hỏi trắc nghiệm B1–B2</h3>
+          <p class="muted">Câu hỏi và các lựa chọn được <b>xáo trộn ngẫu nhiên</b> mỗi lần làm. Nội dung kiểm tra: nghĩa, ngữ cảnh, collocations, lựa chọn từ, cụm động từ, lỗi thường gặp và cách dùng.</p>
+          <p class="muted small">Điểm số và câu sai sẽ được lưu lại trong mục <b>❌ Mistakes</b> và <b>📊 Progress</b>.</p>
+          <button class="btn primary" id="quizStart">Bắt đầu Quiz</button>
+        </div>
+        <div id="quizBox" hidden></div>
+      </section>
+
+      <!-- ============ MISTAKES ============ -->
+      <section class="view" id="view-mistakes">
+        <h1>❌ Mistakes Review</h1>
+        <p class="muted">Các câu bạn trả lời sai được lưu tự động tại đây.</p>
+        <div class="btnrow" style="margin-bottom:14px">
+          <button class="btn" id="reviewAllBtn">🔁 Review mistakes</button>
+          <button class="btn ghost" id="clearMistakesBtn">Xoá danh sách lỗi</button>
+        </div>
+        <div id="mistakesList"></div>
+      </section>
+
+      <!-- ============ PROGRESS ============ -->
+      <section class="view" id="view-progress">
+        <h1>📊 My Progress</h1>
+        <div class="card">
+          <h2>Overall</h2>
+          <div class="bigbar"><span id="progOverallBar"></span></div>
+          <p class="muted"><b id="progOverallPct">0%</b> hoàn thành Unit 10</p>
+        </div>
+        <div class="grid stats" id="progressStats"></div>
+        <div class="card" id="progressDetails"></div>
+        <div class="card">
+          <h3>Quản lý dữ liệu</h3>
+          <p class="muted small">Tiến độ được lưu bằng <code>localStorage</code> trên thiết bị này. Không cần backend, không cần đăng nhập.</p>
+          <button class="btn bad" id="resetProgress">Xoá toàn bộ tiến độ</button>
+        </div>
+      </section>
+
+      <!-- ============ ORIGINAL ============ -->
+      <section class="view" id="view-original">
+        <h1>📖 ORIGINAL LESSON</h1>
+        <p class="muted">Toàn bộ nội dung gốc của Unit 10 — Relationships, hiển thị <b>nguyên văn 100%</b>, không chỉnh sửa, không rút gọn.</p>
+        <pre class="raw">10 Relationships
+
+A Types of relationship
+ANITA: Are you and Holly best friends?
+LUCY: She’s a good friend – she’s not my best friend.
+ANITA: But she’s more than just a casual acquaintance¹, right?
+LUCY: Oh, yes. We were housemates² at university.
+ANITA: Really? So how did you first meet her?
+LUCY: I met her through my ex³, Kallum. She wasn’t in a steady⁴ relationship with anyone at the time, and she was looking for someone to share a room.
+ANITA: Uh-huh. Is that Kallum who’s now Olivia’s partner⁵?
+LUCY: Yeah, that’s the one. They’re not just partners, they’re married and they’re colleagues too. They’re saving to buy a house now, so Kallum’s living with his parents-in-law⁶ at the moment.
+¹ a person you have met but you don’t know well
+² mate [friend; infml] is used in compound nouns to describe a person you share something with, e.g. classmate, roommate, workmate, flatmate, housemate. Workmate is common in non-professional or informal contexts; colleague is common among professional people, and sounds more formal.
+³ ex- can be used without (informally) or with another word: ex-girlfriend, ex-husband, etc.
+⁴ fixed and not changing suddenly
+⁵ partner is used for someone you live with but are not married to, or for a business relationship where you share the ownership or running of a company
+⁶ his wife’s parents (his mother-in-law and father-in-law)
+
+B Internet relationships
+&gt; MyBook | Home Profile Friends Inbox
+&gt; If you join a social network, you can acquire friends (people you share personal information with) and build up your list of contacts. You can invite people to become your friends, and you can choose to accept new friends who invite you. You can interact with your friends by exchanging messages or posting comments on their page. You can also share photos and tag your friends (name them in photos that you post). If you want to finish a relationship, you can unfriend / defriend that person.
+&gt; 
+
+C Liking and not liking someone
+| core verb | positive (stronger) | negative |
+|---|---|---|
+| like | love | dislike |
+|  | adore | can't stand |
+|  | idolise | loathe /ləʊð/ |
+| respect | look up to | look down on |
+|  | admire | despise |
+| attract | fancy (infml) | leave someone cold |
+| be attracted to |  |  |
+She doesn’t just like Ben, she idolises him. I can’t stand him.
+I really fancy Charlotte, but her friend just leaves me cold / doesn’t do anything for me.
+
+D Phrases and idioms for relationships and dating
+ * Lily and I get on well (with each other). [have a good relationship]
+ * Jack and Amelia don’t see eye to eye. [often argue/disagree]
+ * I’ve fallen out with my parents again. [had arguments]
+ * Carl is having an affair with his boss. [a sexual relationship, usually secret]
+ * Let’s try and make it up. [be friends again after a row/quarrel]
+ * He’s dating a Spanish girl. They’ve been seeing each other for a couple of months. [meeting and spending time together]
+ * They met at a party and got together soon after. [started a romantic relationship]
+
+Common mistakes
+&gt; We say: People make friends. (NOT get friends or find friends)
+&gt; It's often difficult to make new friends when you move to another city. (NOT It's often difficult to get friends ...)
+&gt; 
+
+Exercises
+10.1 Use words with the suffix -mate to rewrite these sentences.
+ * This is Jack. He and I share a flat. &lt;u&gt;This is Jack. He and I are flatmates.&lt;/u&gt;
+ * Mike was the person I shared a room with at university. _____________________
+ * We were in the same class together in 2006, weren’t we? _____________________
+ * She’s not really a friend; she’s just someone I work with. _____________________
+ * Abbie is always arguing with the people she shares a house with. _____________________
+10.2 How many sentences can you write about the relationships between the people in the pictures, using words from the opposite page?
+EXAMPLE Jon and Erica are colleagues.
+ * Jon &amp; Erica
+ * PARKS AND NASH GRAPHIC DESIGNERS ( Ben Parks &amp; Joe Nash )
+ * Georgie &amp; Tania
+ * Nick &amp; Claire (Started a relationship a year ago - meet regularly)
+10.3 Complete the text messages with the correct form of words from B opposite.
+Have you checked your social media this morning? Sam has ¹____________________ you in a really funny photo and ²____________________ it with everyone! 😃
+My grandma has just ³____________________ me to be her friend online! Don't know if I should ⁴____________________ or not.
+I'm going to ⁵____________________ Emma if she keeps posting nasty ⁶____________________ about me online.
+10.4 What do you think the relationships between the people below would be? Use the verbs, phrases and idioms opposite.
+ * a teenage music fan: (a) parents He/ She might like/ dislike his/ her parents. (b) pop star (c) strict teacher (d) mate
+ * a personal assistant: (a) another personal assistant (b) the boss (c) a very attractive workmate
+ * a 45-year-old: (a) teenagers (b) ex-husband/wife who was cruel
+10.5 Correct the mistakes in these sentences. There may be more than one mistake.
+ * Rosie and Matt don’t get see on eye to eye.
+ * I fell up with my parents last night. It wasn’t my fault.
+ * We had a quarrel but now we’ve made it well.
+ * Do you think Josh and Nuala are making an affair? I do.
+ * I see very well with all my colleagues at work.
+ * Jo’s attractive, but her mate just makes me cold completely.
+ * Maria seems to find it difficult to get friends among her classmates.
+ * I met my boyfriend at a party and we became together soon after.
+10.6 Over to you
+Complete the sentences so they are true for you.
+ * _____________________ is a good friend of mine.
+ * _____________________ is just a casual acquaintance.
+ * Someone I look up to is _____________________.
+ * A famous person I loathe is _____________________.
+ * Someone I once fancied was _____________________.
+ * Someone I adore is _____________________.</pre>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-bg" id="modalBg" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Đóng cửa sổ">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   1. VOCABULARY DATABASE
+   ========================================================= */
+const VOCAB = [
+/* ---- A. Types of relationship ---- */
+{id:'casual-acquaintance',w:'casual acquaintance',pos:'noun phrase',ipa:'/ˌkæʒuəl əˈkweɪntəns/',vi:'người quen sơ (đã gặp nhưng chưa biết rõ)',en:'a person you have met but you don’t know well',ex:'But she’s more than just a casual acquaintance, right?',cat:'A',lvl:'B2'},
+{id:'good-friend',w:'good friend',pos:'noun phrase',ipa:'/ˌɡʊd ˈfrend/',vi:'bạn tốt',en:'a friend you like and trust, but not your closest friend',ex:'She’s a good friend – she’s not my best friend.',cat:'A',lvl:'A2'},
+{id:'housemate',w:'housemate',pos:'noun',ipa:'/ˈhaʊsmeɪt/',vi:'người ở chung nhà',en:'a person you share a house with',ex:'We were housemates at university.',cat:'A',lvl:'B1'},
+{id:'flatmate',w:'flatmate',pos:'noun',ipa:'/ˈflætmeɪt/',vi:'người ở chung căn hộ',en:'a person you share a flat with',ex:'This is Jack. He and I are flatmates.',cat:'A',lvl:'B1'},
+{id:'roommate',w:'roommate',pos:'noun',ipa:'/ˈruːmmeɪt/',vi:'bạn cùng phòng',en:'a person you share a room with',ex:'Mike was my roommate at university.',cat:'A',lvl:'B1'},
+{id:'classmate',w:'classmate',pos:'noun',ipa:'/ˈklɑːsmeɪt/',vi:'bạn cùng lớp',en:'a person who is in the same class as you',ex:'We were classmates in 2006, weren’t we?',cat:'A',lvl:'A2'},
+{id:'workmate',w:'workmate',pos:'noun',ipa:'/ˈwɜːkmeɪt/',vi:'người làm việc cùng (thân mật)',en:'a person you work with; common in non-professional or informal contexts',ex:'She’s not really a friend; she’s just my workmate.',cat:'A',lvl:'B1'},
+{id:'colleague',w:'colleague',pos:'noun',ipa:'/ˈkɒliːɡ/',vi:'đồng nghiệp (trang trọng)',en:'a person you work with; common among professional people, and sounds more formal',ex:'Jon and Erica are colleagues.',cat:'A',lvl:'B1'},
+{id:'mate',w:'mate',pos:'noun (informal)',ipa:'/meɪt/',vi:'bạn (thân mật)',en:'friend; used in compound nouns to describe a person you share something with',ex:'He’s an old mate of mine from university.',cat:'A',lvl:'B1'},
+{id:'ex',w:'ex',pos:'noun (informal)',ipa:'/eks/',vi:'người yêu / vợ / chồng cũ',en:'a former partner; can be used alone or with another word: ex-girlfriend, ex-husband, etc.',ex:'I met her through my ex, Kallum.',cat:'A',lvl:'B1'},
+{id:'steady-relationship',w:'steady relationship',pos:'noun phrase',ipa:'/ˌstedi rɪˈleɪʃnʃɪp/',vi:'mối quan hệ ổn định',en:'a fixed relationship that is not changing suddenly',ex:'She wasn’t in a steady relationship with anyone at the time.',cat:'A',lvl:'B2'},
+{id:'partner',w:'partner',pos:'noun',ipa:'/ˈpɑːtnə/',vi:'bạn đời / đối tác',en:'someone you live with but are not married to, or a business relationship where you share the ownership or running of a company',ex:'Is that Kallum who’s now Olivia’s partner?',cat:'A',lvl:'B1'},
+{id:'parents-in-law',w:'parents-in-law',pos:'noun plural',ipa:'/ˌpeərənts ɪn ˈlɔː/',vi:'bố mẹ vợ / bố mẹ chồng',en:'your wife’s or husband’s parents',ex:'Kallum’s living with his parents-in-law at the moment.',cat:'A',lvl:'B2'},
+{id:'mother-in-law',w:'mother-in-law / father-in-law',pos:'noun',ipa:'/ˈmʌðər ɪn lɔː/ · /ˈfɑːðər ɪn lɔː/',vi:'mẹ vợ/chồng · bố vợ/chồng',en:'his wife’s parents (his mother-in-law and father-in-law)',ex:'his wife’s parents (his mother-in-law and father-in-law)',cat:'A',lvl:'B1'},
+
+/* ---- B. Internet relationships ---- */
+{id:'social-network',w:'social network',pos:'noun phrase',ipa:'/ˌsəʊʃl ˈnetwɜːk/',vi:'mạng xã hội',en:'a website where people share personal information and communicate',ex:'If you join a social network, you can acquire friends.',cat:'B',lvl:'B1'},
+{id:'acquire-friends',w:'acquire friends',pos:'verb phrase',ipa:'/əˈkwaɪə frendz/',vi:'có thêm bạn (trên mạng xã hội)',en:'to get friends (on a social network)',ex:'If you join a social network, you can acquire friends.',cat:'B',lvl:'B2'},
+{id:'build-up',w:'build up',pos:'phrasal verb',ipa:'/ˌbɪld ˈʌp/',vi:'xây dựng dần, tích lũy',en:'to increase or develop gradually',ex:'… and build up your list of contacts.',cat:'B',lvl:'B2'},
+{id:'contacts',w:'contacts',pos:'noun plural',ipa:'/ˈkɒntækts/',vi:'danh bạ / những người liên hệ',en:'the people you know and communicate with',ex:'You can build up your list of contacts.',cat:'B',lvl:'B1'},
+{id:'invite',w:'invite',pos:'verb',ipa:'/ɪnˈvaɪt/',vi:'mời',en:'to ask someone to do something or to join something',ex:'You can invite people to become your friends.',cat:'B',lvl:'A2'},
+{id:'accept',w:'accept',pos:'verb',ipa:'/əkˈsept/',vi:'chấp nhận',en:'to agree to something; opposite of decline / refuse',ex:'You can choose to accept new friends who invite you.',cat:'B',lvl:'B1'},
+{id:'interact-with',w:'interact with',pos:'verb phrase',ipa:'/ˌɪntərˈækt wɪð/',vi:'tương tác với',en:'to communicate with and react to someone',ex:'You can interact with your friends by exchanging messages.',cat:'B',lvl:'B2'},
+{id:'exchange-messages',w:'exchange messages',pos:'verb phrase',ipa:'/ɪksˌtʃeɪndʒ ˈmesɪdʒɪz/',vi:'trao đổi tin nhắn',en:'to send messages to each other',ex:'You can interact with your friends by exchanging messages.',cat:'B',lvl:'B1'},
+{id:'post-comments',w:'post comments',pos:'verb phrase',ipa:'/ˌpəʊst ˈkɒments/',vi:'đăng bình luận',en:'to put comments on someone’s page',ex:'… or posting comments on their page.',cat:'B',lvl:'B1'},
+{id:'share-photos',w:'share photos',pos:'verb phrase',ipa:'/ˌʃeə ˈfəʊtəʊz/',vi:'chia sẻ ảnh',en:'to let other people see your photos',ex:'You can also share photos.',cat:'B',lvl:'A2'},
+{id:'tag',w:'tag',pos:'verb',ipa:'/tæɡ/',vi:'gắn thẻ (tên ai vào ảnh)',en:'to name someone in a photo that you post',ex:'You can also share photos and tag your friends.',cat:'B',lvl:'B1'},
+{id:'unfriend',w:'unfriend',pos:'verb',ipa:'/ˌʌnˈfrend/',vi:'hủy kết bạn (trên mạng xã hội)',en:'to end an online friendship',ex:'If you want to finish a relationship, you can unfriend that person.',cat:'B',lvl:'B1'},
+{id:'defriend',w:'defriend',pos:'verb',ipa:'/ˌdiːˈfrend/',vi:'hủy kết bạn (biến thể của unfriend)',en:'same meaning as unfriend — to end an online friendship',ex:'You can unfriend / defriend that person.',cat:'B',lvl:'B1'},
+
+/* ---- C. Liking and not liking someone ---- */
+{id:'like',w:'like',pos:'verb',ipa:'/laɪk/',vi:'thích',en:'to enjoy something or approve of someone',ex:'She doesn’t just like Ben, she idolises him.',cat:'C',lvl:'A2'},
+{id:'love',w:'love',pos:'verb',ipa:'/lʌv/',vi:'yêu, rất thích',en:'to like someone or something very much',ex:'I love spending time with my close friends.',cat:'C',lvl:'A2'},
+{id:'adore',w:'adore',pos:'verb',ipa:'/əˈdɔː/',vi:'yêu quý, mê',en:'to love someone very much',ex:'She adores her younger brother.',cat:'C',lvl:'B1'},
+{id:'idolise',w:'idolise',pos:'verb',ipa:'/ˈaɪdəlaɪz/',vi:'thần tượng hóa',en:'to admire someone very much',ex:'She doesn’t just like Ben, she idolises him.',cat:'C',lvl:'B2'},
+{id:'dislike',w:'dislike',pos:'verb',ipa:'/dɪsˈlaɪk/',vi:'không thích',en:'to not like someone or something',ex:'He might dislike his strict teacher.',cat:'C',lvl:'B1'},
+{id:'cant-stand',w:'can’t stand',pos:'idiom',ipa:'/ˌkɑːnt ˈstænd/',vi:'không thể chịu nổi',en:'to hate someone or something',ex:'I can’t stand him.',cat:'C',lvl:'B1'},
+{id:'loathe',w:'loathe',pos:'verb',ipa:'/ləʊð/',vi:'cực kỳ ghét',en:'to hate someone or something very much',ex:'He might loathe his ex-husband/wife.',cat:'C',lvl:'B2'},
+{id:'respect',w:'respect',pos:'verb',ipa:'/rɪˈspekt/',vi:'tôn trọng',en:'to admire someone because of their qualities or achievements',ex:'I respect my parents for everything they did.',cat:'C',lvl:'B1'},
+{id:'look-up-to',w:'look up to',pos:'phrasal verb',ipa:'/ˌlʊk ˈʌp tuː/',vi:'ngưỡng mộ, kính trọng',en:'to admire and respect someone',ex:'Someone I look up to is my English teacher.',cat:'C',lvl:'B1'},
+{id:'look-down-on',w:'look down on',pos:'phrasal verb',ipa:'/ˌlʊk ˈdaʊn ɒn/',vi:'coi thường',en:'to think someone is less important than you',ex:'He looks down on people who didn’t go to university.',cat:'C',lvl:'B2'},
+{id:'admire',w:'admire',pos:'verb',ipa:'/ədˈmaɪə/',vi:'ngưỡng mộ, khâm phục',en:'to respect and like someone',ex:'I admire her for her courage.',cat:'C',lvl:'B1'},
+{id:'despise',w:'despise',pos:'verb',ipa:'/dɪˈspaɪz/',vi:'khinh bỉ, cực ghét',en:'to hate someone or something strongly',ex:'She despises people who lie.',cat:'C',lvl:'B2'},
+{id:'attract',w:'attract',pos:'verb',ipa:'/əˈtrækt/',vi:'hấp dẫn, thu hút',en:'to make someone interested in you or like you',ex:'Opposites often attract.',cat:'C',lvl:'B1'},
+{id:'fancy',w:'fancy',pos:'verb (informal)',ipa:'/ˈfænsi/',vi:'thích, có cảm tình với ai',en:'to find someone attractive (British English, informal)',ex:'I really fancy Charlotte, but her friend just leaves me cold.',cat:'C',lvl:'B1'},
+{id:'leave-someone-cold',w:'leave someone cold',pos:'idiom',ipa:'/ˌliːv sʌmwʌn ˈkəʊld/',vi:'không gây cảm tình, không hấp dẫn ai',en:'to not attract or interest someone at all',ex:'Her friend just leaves me cold / doesn’t do anything for me.',cat:'C',lvl:'B2'},
+{id:'be-attracted-to',w:'be attracted to',pos:'verb phrase',ipa:'/bi əˈtræktɪd tuː/',vi:'bị hấp dẫn bởi',en:'to feel attracted to someone',ex:'I’m attracted to people with a good sense of humour.',cat:'C',lvl:'B1'},
+
+/* ---- D. Phrases and idioms ---- */
+{id:'get-on-well-with',w:'get on well with',pos:'idiom',ipa:'/ˌɡet ɒn ˈwel wɪð/',vi:'có quan hệ tốt với ai',en:'to have a good relationship with someone',ex:'Lily and I get on well (with each other).',cat:'D',lvl:'B1'},
+{id:'see-eye-to-eye',w:'see eye to eye',pos:'idiom',ipa:'/ˌsiː aɪ tʊ ˈaɪ/',vi:'đồng quan điểm',en:'to agree with someone / have the same opinion',ex:'Jack and Amelia don’t see eye to eye.',cat:'D',lvl:'B2'},
+{id:'fall-out-with',w:'fall out with',pos:'phrasal verb',ipa:'/ˌfɔːl ˈaʊt wɪð/',vi:'bất hòa, cãi nhau với ai',en:'to have an argument with someone and stop being friendly',ex:'I’ve fallen out with my parents again.',cat:'D',lvl:'B2'},
+{id:'have-an-affair',w:'have an affair',pos:'idiom',ipa:'/ˌhæv ən əˈfeə/',vi:'có quan hệ ngoại tình / bí mật',en:'a sexual relationship, usually secret',ex:'Carl is having an affair with his boss.',cat:'D',lvl:'B2'},
+{id:'make-it-up',w:'make it up',pos:'idiom',ipa:'/ˌmeɪk ɪt ˈʌp/',vi:'làm lành (sau khi cãi nhau)',en:'to be friends again after a row/quarrel',ex:'Let’s try and make it up.',cat:'D',lvl:'B2'},
+{id:'date',w:'date',pos:'verb',ipa:'/deɪt/',vi:'hẹn hò với ai',en:'to meet and spend time with someone in a romantic way',ex:'He’s dating a Spanish girl.',cat:'D',lvl:'B1'},
+{id:'see-each-other',w:'see each other',pos:'idiom',ipa:'/ˌsiː iːtʃ ˈʌðə/',vi:'đang hẹn hò / qua lại',en:'meeting and spending time together romantically',ex:'They’ve been seeing each other for a couple of months.',cat:'D',lvl:'B2'},
+{id:'get-together',w:'get together',pos:'phrasal verb',ipa:'/ˌɡet təˈɡeðə/',vi:'bắt đầu mối quan hệ tình cảm',en:'to start a romantic relationship',ex:'They met at a party and got together soon after.',cat:'D',lvl:'B2'},
+{id:'make-friends',w:'make friends',pos:'collocation',ipa:'/ˌmeɪk ˈfrendz/',vi:'kết bạn',en:'to become friendly with someone (NOT get friends / find friends)',ex:'It’s often difficult to make new friends when you move to another city.',cat:'D',lvl:'B1'}
+];
+
+const CAT_NAME = {A:'Types of relationship', B:'Internet relationships', C:'Liking & disliking', D:'Phrases & idioms'};
+const byId = id => VOCAB.find(v => v.id === id);
+
+/* =========================================================
+   2. EXERCISES DATA
+   ========================================================= */
+const EX = {
+'10.1':{
+  title:'10.1 — Use words with the suffix -mate to rewrite these sentences.',
+  sub:'Dùng từ có hậu tố -mate để viết lại các câu sau. (Kiểm tra dựa trên từ khoá -mate.)',
+  type:'rewrite',
+  items:[
+    {n:1, prompt:'This is Jack. He and I share a flat.', answer:'This is Jack. He and I are flatmates.', key:'flatmate', given:true,
+     exp:'flatmate = người ở chung căn hộ. flat (căn hộ) + mate (người cùng chia sẻ).',
+     vi:'flatmate = người ở chung căn hộ.'},
+    {n:2, prompt:'Mike was the person I shared a room with at university.', answer:'Mike was my roommate at university.', key:'roommate',
+     exp:'room + mate → roommate = người/bạn cùng phòng.',
+     vi:'roommate = người/bạn cùng phòng.'},
+    {n:3, prompt:'We were in the same class together in 2006, weren’t we?', answer:'We were classmates in 2006, weren’t we?', key:'classmate',
+     exp:'class + mate → classmate = bạn cùng lớp. Dùng số nhiều classmates vì có “we”.',
+     vi:'classmate = bạn cùng lớp. Ở đây dùng số nhiều classmates.'},
+    {n:4, prompt:'She’s not really a friend; she’s just someone I work with.', answer:'She’s not really a friend; she’s just my workmate.', key:'workmate',
+     exp:'work + mate → workmate = người làm việc cùng. colleague cũng nghĩa là đồng nghiệp nhưng bài yêu cầu dùng hậu tố -mate.',
+     vi:'workmate = người làm việc cùng. (colleague = đồng nghiệp, nhưng bài yêu cầu -mate.)'},
+    {n:5, prompt:'Abbie is always arguing with the people she shares a house with.', answer:'Abbie is always arguing with her housemates.', key:'housemate',
+     exp:'house + mate → housemate = người ở chung nhà. Dùng số nhiều housemates vì có nhiều người.',
+     vi:'housemate = người ở chung nhà. Ở đây dùng số nhiều housemates.'}
+  ],
+  rule:'📌 Quy tắc: -mate = người cùng chia sẻ một nơi/hoạt động với mình → class → classmate; room → roommate; work → workmate; flat → flatmate; house → housemate.'
+},
+
+'10.2':{
+  title:'10.2 — How many sentences can you write about the relationships between the people in the pictures, using words from the opposite page?',
+  sub:'Viết câu về các mối quan hệ. Đây là bài mở — có nhiều đáp án đúng. Đáp án dưới đây là tham khảo.',
+  type:'open',
+  items:[
+    {n:1, prompt:'Jon & Erica', answer:'Jon and Erica are colleagues.',
+     exp:'colleague = đồng nghiệp, đặc biệt phổ biến trong môi trường công việc chuyên nghiệp.',
+     vi:'colleague = đồng nghiệp (trang trọng, dùng trong môi trường chuyên nghiệp).'},
+    {n:2, prompt:'PARKS AND NASH GRAPHIC DESIGNERS (Ben Parks & Joe Nash)', answer:'Ben Parks and Joe Nash are business partners.',
+     exp:'business partners = đối tác kinh doanh — hai người cùng sở hữu hoặc điều hành một công ty.',
+     vi:'business partners = đối tác kinh doanh (cùng sở hữu/điều hành công ty).'},
+    {n:3, prompt:'Georgie & Tania', answer:'Georgie and Tania are friends. / They are good friends.',
+     exp:'friend = bạn bè. Nếu hình thể hiện mối quan hệ thân thiết hơn, có thể dùng “good friends”.',
+     vi:'friend = bạn bè. Có thể dùng “good friends” nếu thân thiết hơn.'},
+    {n:4, prompt:'Nick & Claire (Started a relationship a year ago – meet regularly)', answer:'Nick and Claire are dating. / Nick and Claire are seeing each other.',
+     exp:'date someone = hẹn hò với ai; see each other = đang gặp gỡ/hẹn hò nhau. Vì đề cho “Started a relationship a year ago – meet regularly” nên cả hai cách đều phù hợp.',
+     vi:'date someone = hẹn hò với ai; see each other = đang qua lại/hẹn hò nhau.'}
+  ]
+},
+
+'10.3':{
+  title:'10.3 — Complete the text messages with the correct form of words from B opposite.',
+  sub:'Hoàn thành tin nhắn với dạng đúng của từ ở phần B.',
+  type:'blank',
+  blocks:[
+    'Have you checked your social media this morning? Sam has {1} you in a really funny photo and {2} it with everyone! 😃',
+    'My grandma has just {3} me to be my friend online! Don\'t know if I should {4} or not.',
+    'I\'m going to {5} Emma if she keeps posting nasty {6} about me online.'
+  ],
+  items:[
+    {n:1, answer:'tagged', accept:['tagged','tag'],
+     exp:'tag someone in a photo = gắn thẻ ai trong ảnh. Cấu trúc: tag + someone + in + a photo. Dùng thì hiện tại hoàn thành: has tagged.',
+     vi:'tag someone in a photo = gắn thẻ ai trong ảnh. Sau “has” dùng V3: tagged.'},
+    {n:2, answer:'shared', accept:['shared','share'],
+     exp:'share something with someone = chia sẻ thứ gì với ai. Ở đây: shared it with everyone. Song song với “has tagged” nên dùng V3: shared.',
+     vi:'share something with someone = chia sẻ thứ gì với ai. Dùng V3: shared.'},
+    {n:3, answer:'invited', accept:['invited','invite'],
+     exp:'invite someone to be your friend = mời ai trở thành bạn của mình. Sau “has just” dùng V3: invited.',
+     vi:'invite someone to be your friend = mời ai làm bạn. Dùng V3: invited.'},
+    {n:4, answer:'accept', accept:['accept'],
+     exp:'accept an invitation = chấp nhận lời mời. Đối lập với decline/refuse = từ chối. Sau “should” dùng động từ nguyên thể: accept.',
+     vi:'accept = chấp nhận lời mời (trái nghĩa: decline/refuse = từ chối). Sau “should” dùng V nguyên thể.'},
+    {n:5, answer:'unfriend', accept:['unfriend','defriend'],
+     exp:'unfriend someone = huỷ kết bạn với ai trên mạng xã hội. Sau “going to” dùng động từ nguyên thể: unfriend (hoặc defriend).',
+     vi:'unfriend = huỷ kết bạn trên mạng xã hội. Sau “going to” dùng V nguyên thể.'},
+    {n:6, answer:'comments', accept:['comments','comment'],
+     exp:'post comments = đăng bình luận. nasty comments = những bình luận khó chịu/ác ý. Ở đây dùng số nhiều: comments.',
+     vi:'post comments = đăng bình luận. nasty comments = bình luận ác ý. Dùng số nhiều: comments.'}
+  ]
+},
+
+'10.4':{
+  title:'10.4 — What do you think the relationships between the people below would be?',
+  sub:'Dùng các động từ, cụm từ và thành ngữ ở phần đối diện. Đây là bài mở — có nhiều đáp án hợp lý.',
+  type:'open',
+  items:[
+    {n:1, prompt:'a teenage music fan → (a) parents', answer:'He/She might get on well with his/her parents.',
+     exp:'get on well with = có quan hệ tốt với ai.', vi:'get on well with = có quan hệ tốt với ai.'},
+    {n:2, prompt:'a teenage music fan → (b) pop star', answer:'He/She might idolise the pop star.',
+     exp:'idolise = thần tượng hoá ai đó.', vi:'idolise = thần tượng hoá.'},
+    {n:3, prompt:'a teenage music fan → (c) strict teacher', answer:'He/She might dislike the strict teacher. / He/She might not see eye to eye with the strict teacher.',
+     exp:'dislike = không thích; not see eye to eye with someone = không đồng quan điểm với ai.',
+     vi:'dislike = không thích; not see eye to eye with = không đồng quan điểm với ai.'},
+    {n:4, prompt:'a teenage music fan → (d) mate', answer:'He/She might get on well with his/her mate.',
+     exp:'mate = bạn/bạn bè, cách dùng thân mật (informal).', vi:'mate = bạn (thân mật).'},
+    {n:5, prompt:'a personal assistant → (a) another personal assistant', answer:'He/She might get on well with another personal assistant.',
+     exp:'get on well with = có quan hệ tốt với ai.', vi:'get on well with = có quan hệ tốt với ai.'},
+    {n:6, prompt:'a personal assistant → (b) the boss', answer:'He/She might look up to the boss.',
+     exp:'look up to someone = ngưỡng mộ, kính trọng ai.', vi:'look up to someone = ngưỡng mộ ai.'},
+    {n:7, prompt:'a personal assistant → (c) a very attractive workmate', answer:'He/She might fancy the workmate.',
+     exp:'fancy someone = có cảm tình/thích ai (informal).', vi:'fancy someone = thích/có cảm tình với ai (thân mật).'},
+    {n:8, prompt:'a 45-year-old → (a) teenagers', answer:'He/She might not see eye to eye with teenagers.',
+     exp:'not see eye to eye with someone = không đồng quan điểm với ai.', vi:'not see eye to eye with = không đồng quan điểm với ai.'},
+    {n:9, prompt:'a 45-year-old → (b) ex-husband/wife who was cruel', answer:'He/She might loathe his/her ex-husband/wife.',
+     exp:'loathe = cực kỳ ghét.', vi:'loathe = cực kỳ ghét.'}
+  ]
+},
+
+'10.5':{
+  title:'10.5 — Correct the mistakes in these sentences. There may be more than one mistake.',
+  sub:'Sửa lỗi sai trong các câu sau. (Kiểm tra dựa trên các cụm từ khoá đã sửa đúng.)',
+  type:'error',
+  items:[
+    {n:1, prompt:'Rosie and Matt don’t get see on eye to eye.',
+     answer:'Rosie and Matt don’t see eye to eye.',
+     must:['see eye to eye'], mustNot:['get see','on eye'],
+     exp:'Cụm cố định là see eye to eye = đồng quan điểm / có cùng ý kiến. Không dùng “get see on eye to eye”. Cấu trúc: Subject + see eye to eye.',
+     vi:'see eye to eye = đồng quan điểm. Không có “get see on eye to eye”.'},
+    {n:2, prompt:'I fell up with my parents last night. It wasn’t my fault.',
+     answer:'I fell out with my parents last night. It wasn’t my fault.',
+     must:['fell out with'], mustNot:['fell up'],
+     exp:'Cụm động từ fall out with someone = cãi nhau/bất hoà với ai. Dạng quá khứ: fall → fell, vì vậy là fell out with.',
+     vi:'fall out with someone = cãi nhau/bất hoà với ai. Quá khứ: fell out with.'},
+    {n:3, prompt:'We had a quarrel but now we’ve made it well.',
+     answer:'We had a quarrel but now we’ve made it up.',
+     must:['made it up'], mustNot:['made it well'],
+     exp:'make up = làm lành sau khi cãi nhau. They had a quarrel → They made up. Ở đây: we’ve made it up.',
+     vi:'make up = làm lành sau khi cãi nhau → we’ve made it up.'},
+    {n:4, prompt:'Do you think Josh and Nuala are making an affair? I do.',
+     answer:'Do you think Josh and Nuala are having an affair? I do.',
+     must:['having an affair'], mustNot:['making an affair'],
+     exp:'Cụm cố định: have an affair = có quan hệ tình cảm/tình dục bí mật, thường mang nghĩa ngoại tình. Không dùng “make an affair”.',
+     vi:'have an affair = có quan hệ bí mật/ngoại tình. Không dùng “make an affair”.'},
+    {n:5, prompt:'I see very well with all my colleagues at work.',
+     answer:'I get on very well with all my colleagues at work.',
+     must:['get on very well'], mustNot:['see very well'],
+     exp:'Cụm đúng: get on well with someone = có quan hệ tốt với ai. Không dùng “see well with someone”.',
+     vi:'get on well with someone = có quan hệ tốt với ai. Không dùng “see well with”.'},
+    {n:6, prompt:'Jo’s attractive, but her mate just makes me cold completely.',
+     answer:'Jo’s attractive, but her mate just leaves me cold.',
+     must:['leaves me cold'], mustNot:['makes me cold'],
+     exp:'Cụm cố định: leave someone cold = không gây cảm tình / không hấp dẫn ai. Cấu trúc: leave + someone + cold.',
+     vi:'leave someone cold = không gây cảm tình với ai. Không nói “make someone cold completely”.'},
+    {n:7, prompt:'Maria seems to find it difficult to get friends among her classmates.',
+     answer:'Maria seems to find it difficult to make friends among her classmates.',
+     must:['make friends'], mustNot:['get friends','find friends'],
+     exp:'Đây là Common Mistake được nêu trực tiếp trong bài. Đúng: make friends. Sai: get friends / find friends.',
+     vi:'Đúng: make friends (kết bạn). Sai: get friends / find friends.'},
+    {n:8, prompt:'I met my boyfriend at a party and we became together soon after.',
+     answer:'I met my boyfriend at a party and we got together soon after.',
+     must:['got together'], mustNot:['became together'],
+     exp:'Cụm get together = bắt đầu một mối quan hệ tình cảm. Dạng quá khứ: get → got → we got together soon after.',
+     vi:'get together = bắt đầu mối quan hệ tình cảm. Quá khứ: got together.'}
+  ]
+},
+
+'10.6':{
+  title:'10.6 — Over to you. Complete the sentences so they are true for you.',
+  sub:'Bài cá nhân — không có đáp án duy nhất, không chấm đúng/sai. Dưới đây là ví dụ tham khảo.',
+  type:'personal',
+  items:[
+    {n:1, prompt:'_____________________ is a good friend of mine.', answer:'Minh is a good friend of mine.'},
+    {n:2, prompt:'_____________________ is just a casual acquaintance.', answer:'My neighbour is just a casual acquaintance.'},
+    {n:3, prompt:'Someone I look up to is _____________________.', answer:'Someone I look up to is my English teacher.'},
+    {n:4, prompt:'A famous person I loathe is _____________________.', answer:'A famous person I loathe is a celebrity I dislike.'},
+    {n:5, prompt:'Someone I once fancied was _____________________.', answer:'Someone I once fancied was a girl I knew at school.'},
+    {n:6, prompt:'Someone I adore is _____________________.', answer:'Someone I adore is my younger sister.'}
+  ],
+  glossary:[
+    ['a good friend of mine','một người bạn tốt của tôi'],
+    ['a casual acquaintance','một người quen sơ'],
+    ['look up to someone','ngưỡng mộ ai'],
+    ['loathe someone','cực kỳ ghét ai'],
+    ['fancy someone','thích/có cảm tình với ai (văn nói)'],
+    ['adore someone','rất yêu quý ai']
+  ]
+}
+};
+
+/* =========================================================
+   3. QUIZ — 42 câu hỏi mới (B1–B2)
+   ========================================================= */
+const QUIZ = [
+{q:'Which phrase means "có quan hệ tốt với ai"?',o:['fall out with','get on well with','look down on','leave someone cold'],a:1,e:'get on well with = có quan hệ tốt với ai.'},
+{q:'"She’s more than just a ______ acquaintance – we were at university together."',o:['casual','steady','close','common'],a:0,e:'casual acquaintance = người quen sơ (đã gặp nhưng chưa biết rõ).'},
+{q:'A person you have met but you don’t know well is a ______.',o:['colleague','partner','casual acquaintance','housemate'],a:2,e:'casual acquaintance = người quen sơ.'},
+{q:'"Jack and Amelia don’t ______ – they argue all the time."',o:['see eye to eye','get together','make it up','look up to'],a:0,e:'not see eye to eye = không đồng quan điểm, hay tranh cãi.'},
+{q:'To ______ with someone means to have an argument and stop being friendly.',o:['fall out','get on','make up','look up'],a:0,e:'fall out with someone = bất hoà, cãi nhau với ai.'},
+{q:'"Carl is ______ an affair with his boss."',o:['making','having','doing','taking'],a:1,e:'Cụm cố định: have an affair. Không dùng make an affair.'},
+{q:'After a quarrel, if you become friends again, you ______.',o:['fall out','make it up','see eye to eye','look down on'],a:1,e:'make it up = làm lành sau khi cãi nhau.'},
+{q:'"They met at a party and ______ soon after."',o:['got together','became together','made together','went together'],a:0,e:'get together = bắt đầu một mối quan hệ tình cảm.'},
+{q:'Which verb means "ngưỡng mộ và tôn trọng ai"?',o:['look down on','look up to','leave someone cold','despise'],a:1,e:'look up to someone = ngưỡng mộ, kính trọng ai.'},
+{q:'Which verb means "coi thường ai"?',o:['look up to','look down on','respect','admire'],a:1,e:'look down on someone = coi thường ai đó.'},
+{q:'"I can’t ______ him – he’s so rude."',o:['stand','stay','sit','keep'],a:0,e:'can’t stand = không thể chịu nổi.'},
+{q:'"loathe" means ______.',o:['quite like','hate very much','admire','ignore'],a:1,e:'loathe /ləʊð/ = cực kỳ ghét.'},
+{q:'"fancy someone" (informal British English) means ______.',o:['be afraid of them','find them attractive','avoid them','argue with them'],a:1,e:'fancy someone = thích, có cảm tình với ai (informal).'},
+{q:'"Her mate just ______ me cold."',o:['leaves','makes','takes','gives'],a:0,e:'leave someone cold = không gây cảm tình với ai.'},
+{q:'Which sentence is correct?',o:['It’s difficult to get friends in a new city.','It’s difficult to make friends in a new city.','It’s difficult to take friends in a new city.','It’s difficult to do friends in a new city.'],a:1,e:'Common mistake: đúng là MAKE friends, không dùng get friends / find friends.'},
+{q:'"We were ______ at university – we shared a room."',o:['classmates','roommates','colleagues','partners'],a:1,e:'roommate = người/bạn cùng phòng.'},
+{q:'Which word is more formal and common among professional people?',o:['workmate','colleague','mate','classmate'],a:1,e:'colleague = đồng nghiệp, trang trọng hơn workmate.'},
+{q:'"Kallum’s living with his ______ at the moment." (his wife’s parents)',o:['parents-in-law','in-laws parents','parents in laws','mother-in-laws'],a:0,e:'parents-in-law = bố mẹ vợ/chồng.'},
+{q:'"partner" can be used for ______.',o:['only married people','someone you live with but are not married to, or a business relationship','only classmates','only ex-partners'],a:1,e:'partner dùng cho người sống chung chưa kết hôn, hoặc quan hệ đối tác kinh doanh.'},
+{q:'"a steady relationship" means ______.',o:['a new relationship','a fixed relationship that isn’t changing suddenly','a secret relationship','a business relationship'],a:1,e:'steady = fixed and not changing suddenly = ổn định, không thay đổi đột ngột.'},
+{q:'On social media, to ______ someone in a photo means to name them in it.',o:['tag','tick','label','mark'],a:0,e:'tag someone in a photo = gắn thẻ tên ai vào ảnh.'},
+{q:'"Sam has ______ you in a really funny photo."',o:['tagged','ticked','labelled','named'],a:0,e:'tag → tagged. Cấu trúc: tag someone in a photo.'},
+{q:'"My grandma has just ______ me to be her friend online."',o:['invited','accepted','tagged','shared'],a:0,e:'invite someone to be your friend = mời ai làm bạn.'},
+{q:'The opposite of accepting a friend request is to ______ it.',o:['decline','unfriend','invite','tag'],a:0,e:'decline / refuse = từ chối, đối lập với accept.'},
+{q:'"I’m going to ______ Emma if she keeps posting nasty comments."',o:['unfriend','invite','tag','accept'],a:0,e:'unfriend = huỷ kết bạn trên mạng xã hội.'},
+{q:'"If you want to finish a relationship online, you can ______ that person."',o:['unfriend','defriend','both A and B are correct','invite'],a:2,e:'unfriend và defriend đều có nghĩa là huỷ kết bạn.'},
+{q:'"If you join a social network, you can ______ friends."',o:['acquire','do','take','hold'],a:0,e:'acquire friends = có thêm/kết nạp bạn (trên mạng xã hội).'},
+{q:'You can interact ______ your friends online.',o:['with','to','on','for'],a:0,e:'interact with someone = tương tác với ai.'},
+{q:'"You can interact with your friends by ______ messages."',o:['exchanging','changing','replacing','moving'],a:0,e:'exchange messages = trao đổi tin nhắn.'},
+{q:'Which word expresses the strongest dislike?',o:['dislike','loathe','can’t stand','leave someone cold'],a:1,e:'loathe = cực kỳ ghét — mạnh nhất trong các lựa chọn.'},
+{q:'"idolise" means ______.',o:['hate','admire someone very much','ignore','fear'],a:1,e:'idolise = thần tượng hoá, ngưỡng mộ ai đó rất nhiều.'},
+{q:'"despise" is closest in meaning to ______.',o:['adore','loathe','fancy','respect'],a:1,e:'despise = khinh bỉ, cực ghét — gần nghĩa với loathe.'},
+{q:'"I really ______ Charlotte, but her friend leaves me cold."',o:['fancy','loathe','despise','look down on'],a:0,e:'fancy someone = thích, có cảm tình với ai.'},
+{q:'"They’ve been ______ each other for a couple of months."',o:['seeing','dating with','meeting with','getting'],a:0,e:'see each other = đang hẹn hò/qua lại. Không nói “dating with”.'},
+{q:'"date someone" means ______.',o:['to marry someone','to spend time with someone romantically','to work with someone','to argue with someone'],a:1,e:'date someone = hẹn hò, dành thời gian với ai theo cách lãng mạn.'},
+{q:'"I’ve ______ with my parents again."',o:['fallen out','fallen up','got out','made out'],a:0,e:'fall out with someone = bất hoà, cãi nhau với ai.'},
+{q:'Which phrase means "có quan hệ tình cảm/tình dục bí mật"?',o:['have an affair','get together','see eye to eye','make it up'],a:0,e:'have an affair = có quan hệ tình cảm/tình dục, thường là bí mật.'},
+{q:'"We had a quarrel but now we’ve ______."',o:['made it up','made it well','done it up','taken it up'],a:0,e:'make it up = làm lành sau khi cãi nhau.'},
+{q:'"look ______ on" means to think someone is less important than you.',o:['down','up','out','over'],a:0,e:'look down on someone = coi thường ai.'},
+{q:'"She doesn’t just like Ben, she ______ him."',o:['idolises','dislikes','despises','leaves cold'],a:0,e:'idolise = thần tượng hoá, cực kỳ ngưỡng mộ.'},
+{q:'"respect" is a core verb. Which is the stronger positive form?',o:['look down on','look up to','leave someone cold','dislike'],a:1,e:'look up to = ngưỡng mộ, kính trọng — dạng tích cực mạnh hơn của respect.'},
+{q:'"The film ______ me cold." means it didn’t interest me at all.',o:['left','made','took','gave'],a:0,e:'leave someone cold = không gây cảm tình, không hấp dẫn ai.'}
+];
+
+/* =========================================================
+   4. STATE + STORAGE
+   ========================================================= */
+const STORE_KEY = 'unit10_relationships_v1';
+const defaultState = () => ({
+  known:{}, review:{}, learned:{}, flashSeen:{},
+  quiz:{answered:0, correct:0, runs:0},
+  ex:{}, exItems:{},
+  mistakes:[], sections:{}, answers:{}
+});
+let state = defaultState();
+try{
+  const raw = localStorage.getItem(STORE_KEY);
+  if(raw) state = Object.assign(defaultState(), JSON.parse(raw));
+}catch(e){ state = defaultState(); }
+
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+}
+function countKeys(o){ return o ? Object.keys(o).length : 0; }
+
+/* =========================================================
+   5. HELPERS
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/**
+ * Chuyển một chuỗi bất kỳ thành một JS string literal hợp lệ,
+ * an toàn khi nhúng vào HTML attribute (đã HTML-escape luôn).
+ * Dùng cho các onclick="fn('...',  <đây>  )".
+ */
+function attrJs(s){
+  return "'" + String(s==null?'':s)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r') + "'";
+}
+
+function norm(s){
+  return String(s||'').toLowerCase()
+    .replace(/[’‘`´]/g,"'")
+    .replace(/[.,!?;:"“”()\-–—]/g,' ')
+    .replace(/\s+/g,' ').trim();
+}
+function shuffle(a){
+  const arr = a.slice();
+  for(let i=arr.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+let toastTimer;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* =========================================================
+   6. AUDIO / PRONUNCIATION
+   ========================================================= */
+const AUDIO_DIR = 'audio/';
+let voicesReady = false;
+function pickBritishVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const vs = speechSynthesis.getVoices() || [];
+  return vs.find(v => /en[-_]GB/i.test(v.lang))
+      || vs.find(v => /en[-_]UK/i.test(v.lang))
+      || vs.find(v => /^en/i.test(v.lang)) || null;
+}
+if('speechSynthesis' in window){
+  speechSynthesis.onvoiceschanged = () => { voicesReady = true; };
+  speechSynthesis.getVoices();
+}
+function speakTTS(text, label){
+  if(!('speechSynthesis' in window)){ toast('Trình duyệt không hỗ trợ đọc văn bản.'); return; }
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-GB';
+    const v = pickBritishVoice();
+    if(v) u.voice = v;
+    u.rate = 0.9; u.pitch = 1;
+    speechSynthesis.speak(u);
+    toast('🔊 Giọng UK của trình duyệt (chưa có file audio thật) — ' + label);
+  }catch(e){ toast('Không phát được âm thanh.'); }
+}
+/**
+ * Thử phát file audio thật tại audio/<id>.mp3.
+ * Nếu file không tồn tại → dùng giọng en-GB của trình duyệt.
+ */
+function playWord(id, text){
+  const url = AUDIO_DIR + id + '.mp3';
+  let settled = false;
+  const fallback = () => { if(settled) return; settled = true; speakTTS(text, text); };
+  try{
+    const audio = new Audio();
+    audio.preload = 'auto';
+    audio.addEventListener('canplaythrough', () => {
+      if(settled) return;
+      settled = true;
+      audio.play().then(()=>toast('🔊 Audio file: ' + id + '.mp3')).catch(fallback);
+    });
+    audio.addEventListener('error', fallback);
+    audio.src = url;
+    audio.load();
+    setTimeout(()=>{ if(!settled) fallback(); }, 700);
+  }catch(e){ fallback(); }
+}
+
+/* =========================================================
+   7. NAVIGATION
+   ========================================================= */
+function go(view){
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  $$('.navitem').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+  state.sections[view] = true; save();
+  if(view === 'home')      renderHome();
+  if(view === 'progress')  renderProgress();
+  if(view === 'mistakes')  renderMistakes();
+  if(view === 'vocab')     renderVocab();
+  if(view === 'flash')     initFlash();
+  if(view === 'pron')      renderPron();
+  if(view === 'exercises') renderExercises();
+  if(view === 'quiz')      renderQuizIntro();
+  closeSidebar();
+  window.scrollTo({top:0, behavior:'smooth'});
+  updateCounters();
+}
+$('#nav').addEventListener('click', e => {
+  const b = e.target.closest('.navitem');
+  if(b) go(b.dataset.view);
+});
+const sidebar = $('#sidebar'), backdrop = $('#backdrop');
+function openSidebar(){ sidebar.classList.add('open'); backdrop.classList.add('show'); }
+function closeSidebar(){ sidebar.classList.remove('open'); backdrop.classList.remove('show'); }
+$('#menuBtn').addEventListener('click', openSidebar);
+backdrop.addEventListener('click', closeSidebar);
+
+/* =========================================================
+   8. STATS
+   ========================================================= */
+function scoredExerciseTotals(){
+  let total = 0;
+  Object.keys(EX).forEach(k => {
+    if(k === '10.2' || k === '10.4' || k === '10.6') return;
+    total += EX[k].items.length;
+  });
+  return total;
+}
+const EX_TOTAL = scoredExerciseTotals();
+
+function stats(){
+  const total = VOCAB.length;
+  const learned = countKeys(state.learned);
+  const known = countKeys(state.known);
+  const review = countKeys(state.review);
+  const flashSeen = countKeys(state.flashSeen);
+  let exCorrect = 0;
+  Object.values(state.ex).forEach(v => { exCorrect += (v.correct || 0); });
+  const quizAcc = state.quiz.answered ? Math.round(state.quiz.correct / state.quiz.answered * 100) : 0;
+  const overall = Math.round(((learned/total) + (known/total) + (exCorrect/EX_TOTAL) + (quizAcc/100)) / 4 * 100);
+  return {total, learned, known, review, flashSeen, exCorrect, exTotal:EX_TOTAL, quizAcc, overall,
+          mistakes: state.mistakes.length, quizAnswered: state.quiz.answered, quizCorrect: state.quiz.correct};
+}
+
+function updateCounters(){
+  const s = stats();
+  $('#cntVocab').textContent = s.known + '/' + s.total;
+  $('#cntMistakes').textContent = s.mistakes;
+}
+
+/* =========================================================
+   9. HOME
+   ========================================================= */
+function renderHome(){
+  const s = stats();
+  $('#homeOverallBar').style.width = s.overall + '%';
+  $('#homeOverallPct').textContent = s.overall + '%';
+  $('#homeStats').innerHTML = [
+    ['Vocabulary learned', s.learned + ' / ' + s.total, 'Từ đã mở xem chi tiết'],
+    ['Flashcards completed', s.known + ' / ' + s.total, 'Thẻ đã đánh dấu “Know”'],
+    ['Exercises completed', s.exCorrect + ' / ' + s.exTotal, 'Câu đúng ở 10.1, 10.3, 10.5'],
+    ['Correct answers', s.quizCorrect + ' / ' + s.quizAnswered, 'Quiz chính xác ' + s.quizAcc + '%'],
+    ['Mistakes', String(s.mistakes), 'Câu sai cần ôn lại'],
+    ['Review items', String(s.review), 'Từ được đánh dấu khó']
+  ].map(([k,v,sub]) =>
+    `<div class="stat"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div><div class="s">${esc(sub)}</div></div>`
+  ).join('');
+
+  const quick = [
+    ['lesson','📚','Lesson','A–D + Common mistakes'],
+    ['vocab','🧠','Vocabulary','52 từ & cụm từ'],
+    ['flash','🃏','Flashcards','Lật thẻ, xáo trộn, đánh dấu'],
+    ['pron','🔊','Pronunciation','IPA + British English'],
+    ['exercises','📝','Exercises','10.1 – 10.6 có giải thích'],
+    ['quiz','🎯','Quiz','42 câu trắc nghiệm mới'],
+    ['mistakes','❌','Mistakes','Ôn lại câu sai'],
+    ['progress','📊','Progress','Theo dõi tiến độ'],
+    ['original','📖','Original Lesson','Nội dung gốc 100%']
+  ];
+  $('#homeQuick').innerHTML = quick.map(([v,ic,t,s]) =>
+    `<button class="qbtn" data-go="${v}"><b>${ic} ${esc(t)}</b><span>${esc(s)}</span></button>`
+  ).join('');
+  $('#homeQuick').querySelectorAll('.qbtn').forEach(b => b.addEventListener('click', ()=>go(b.dataset.go)));
+}
+
+/* =========================================================
+   10. VOCABULARY VIEW
+   ========================================================= */
+let vocabFilter = 'all';
+function renderVocab(){
+  const q = ($('#vocabSearch').value || '').toLowerCase().trim();
+  let list = VOCAB.filter(v => {
+    if(vocabFilter === 'difficult') return !!state.review[v.id];
+    if(vocabFilter === 'all') return true;
+    if(vocabFilter === 'A2') return v.lvl === 'A2';
+    return v.cat === vocabFilter || v.lvl === vocabFilter;
+  });
+  if(q){
+    list = list.filter(v =>
+      (v.w + ' ' + v.vi + ' ' + v.en + ' ' + v.ex + ' ' + v.ipa).toLowerCase().includes(q)
+    );
+  }
+  $('#vocabCount').textContent = list.length + ' / ' + VOCAB.length + ' mục';
+  $('#vocabGrid').innerHTML = list.map(v => {
+    const known = state.known[v.id];
+    const rev = state.review[v.id];
+    return `<article class="vcard">
+      <div class="top">
+        <h4>${esc(v.w)}</h4>
+        <span class="badge lvl ${esc(v.lvl)}">${esc(v.lvl)}</span>
+      </div>
+      <p class="ipa">${esc(v.ipa)}</p>
+      <p class="vi">${esc(v.vi)}</p>
+      <p class="en">${esc(v.en)}</p>
+      <p class="muted small">${esc(CAT_NAME[v.cat])} · ${esc(v.pos)}</p>
+      ${known ? '<span class="badge known">✓ Đã biết</span>' : ''}
+      ${rev ? '<span class="badge review">↺ Cần ôn</span>' : ''}
+      <div class="acts">
+        <button class="btn sm icon" aria-label="Nghe phát âm ${esc(v.w)}" onclick="playWord(${attrJs(v.id)},${attrJs(v.w)})">🔊</button>
+        <button class="btn sm ghost" onclick="openWord(${attrJs(v.id)})">Chi tiết</button>
+        <button class="btn sm ghost" onclick="toggleKnown(${attrJs(v.id)})">${known ? 'Bỏ đã biết' : 'Đã biết'}</button>
+        <button class="btn sm ghost" onclick="toggleReview(${attrJs(v.id)})">${rev ? 'Bỏ khó' : 'Khó'}</button>
+      </div>
+    </article>`;
+  }).join('') || '<p class="muted">Không tìm thấy mục nào phù hợp.</p>';
+}
+$('#vocabSearch').addEventListener('input', renderVocab);
+$('#vocabChips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if(!c) return;
+  vocabFilter = c.dataset.f;
+  $$('#vocabChips .chip').forEach(x => x.classList.toggle('active', x === c));
+  renderVocab();
+});
+
+function toggleKnown(id){
+  if(state.known[id]) delete state.known[id]; else state.known[id] = true;
+  state.learned[id] = true;
+  save(); renderVocab(); updateCounters(); renderHome();
+  toast(state.known[id] ? 'Đã đánh dấu: Đã biết' : 'Đã bỏ đánh dấu');
+}
+function toggleReview(id){
+  if(state.review[id]) delete state.review[id]; else state.review[id] = true;
+  save(); renderVocab(); updateCounters(); renderHome();
+  toast(state.review[id] ? 'Đã thêm vào danh sách khó' : 'Đã bỏ khỏi danh sách khó');
+}
+
+/* ---------- WORD MODAL ---------- */
+function openWord(id){
+  const v = byId(id);
+  if(!v) return;
+  state.learned[id] = true; save(); updateCounters();
+  const rev = state.review[id], known = state.known[id];
+  $('#modalBody').innerHTML = `
+    <h2 id="modalTitle" style="padding-right:34px">${esc(v.w)}</h2>
+    <p class="muted" style="margin-bottom:4px">${esc(v.pos)} · <span class="badge lvl ${esc(v.lvl)}">${esc(v.lvl)}</span></p>
+    <p class="ipa" style="font-family:ui-monospace,Menlo,monospace;color:var(--primary-dark);font-weight:700">${esc(v.ipa)}</p>
+    <div class="btnrow" style="margin:10px 0 4px">
+      <button class="btn primary" onclick="playWord(${attrJs(v.id)},${attrJs(v.w)})">🔊 Listen (British English)</button>
+      <button class="btn" onclick="toggleKnown(${attrJs(v.id)});openWord(${attrJs(v.id)})">${known ? '✓ Đã biết' : 'Đánh dấu đã biết'}</button>
+      <button class="btn" onclick="toggleReview(${attrJs(v.id)});openWord(${attrJs(v.id)})">${rev ? '↺ Đang cần ôn' : 'Đánh dấu khó'}</button>
+    </div>
+    <div class="mrow"><div class="lbl">Meaning (English)</div><div>${esc(v.en)}</div></div>
+    <div class="mrow"><div class="lbl">Vietnamese</div><div>${esc(v.vi)}</div></div>
+    <div class="mrow"><div class="lbl">Example</div><div><i>${esc(v.ex)}</i></div></div>
+    <div class="mrow"><div class="lbl">Category</div><div>${esc(CAT_NAME[v.cat])}</div></div>
+    <p class="muted small" style="margin-top:14px">Nội dung nghĩa tiếng Anh lấy từ chính bài học. Phần tiếng Việt, IPA và ví dụ bổ sung là <b>learning support</b>.</p>
+  `;
+  $('#modalBg').hidden = false;
+}
+function closeModal(){ $('#modalBg').hidden = true; }
+$('#modalClose').addEventListener('click', closeModal);
+$('#modalBg').addEventListener('click', e => { if(e.target.id === 'modalBg') closeModal(); });
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && !$('#modalBg').hidden) closeModal();
+});
+
+/* ---------- Lesson vocab clicks ---------- */
+document.addEventListener('click', e => {
+  const el = e.target.closest('.vw');
+  if(el && el.dataset.w) openWord(el.dataset.w);
+});
+
+/* =========================================================
+   11. FLASHCARDS
+   ========================================================= */
+let fc = { deck:[], idx:0, flipped:false, mode:'all' };
+function deckFor(mode){
+  if(mode === 'all') return VOCAB.slice();
+  if(mode === 'difficult') return VOCAB.filter(v => state.review[v.id]);
+  return VOCAB.filter(v => v.cat === mode);
+}
+function initFlash(){
+  if(!fc.deck.length){ fc.deck = deckFor(fc.mode); fc.idx = 0; fc.flipped = false; }
+  renderFlash();
+}
+function renderFlash(){
+  const deck = fc.deck;
+  const total = deck.length;
+  $('#fcCounter').textContent = total ? `Card ${fc.idx + 1} / ${total}` : 'Card 0 / 0';
+  $('#fcBar').style.width = total ? ((fc.idx + 1) / total * 100) + '%' : '0%';
+  if(!total){
+    $('#fcWord').textContent = '—';
+    $('#fcIpa').textContent = '';
+    $('#fcBack').innerHTML = '<p class="muted">Không có thẻ nào trong bộ này. Hãy chọn bộ khác hoặc đánh dấu từ khó trong mục Vocabulary.</p>';
+    $('#fcStatus').textContent = '';
+    return;
+  }
+  const v = deck[fc.idx];
+  state.flashSeen[v.id] = true; save();
+  $('#fcCard').classList.toggle('flipped', fc.flipped);
+  $('#fcWord').textContent = v.w;
+  $('#fcIpa').textContent = v.ipa + '  ·  🇬🇧';
+  $('#fcBack').innerHTML = `
+    <div class="w2">${esc(v.w)}</div>
+    <div class="blk"><div class="l">Meaning</div><div class="v">${esc(v.en)}</div></div>
+    <div class="blk"><div class="l">Vietnamese</div><div class="v">${esc(v.vi)}</div></div>
+    <div class="blk"><div class="l">Example</div><div class="v"><i>${esc(v.ex)}</i></div></div>
+    <div class="blk"><div class="l">Part of speech / Level</div><div class="v">${esc(v.pos)} · ${esc(v.lvl)}</div></div>
+  `;
+  const tags = [];
+  if(state.known[v.id]) tags.push('✓ Đã biết');
+  if(state.review[v.id]) tags.push('↺ Cần ôn');
+  $('#fcStatus').textContent = tags.join('  ·  ');
+}
+$('#fcFlip').addEventListener('click', () => { fc.flipped = !fc.flipped; $('#fcCard').classList.toggle('flipped', fc.flipped); });
+$('#fcCard').addEventListener('click', () => { fc.flipped = !fc.flipped; $('#fcCard').classList.toggle('flipped', fc.flipped); });
+$('#fcCard').addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fc.flipped = !fc.flipped; $('#fcCard').classList.toggle('flipped', fc.flipped); } });
+$('#fcNext').addEventListener('click', () => { if(!fc.deck.length) return; fc.idx = (fc.idx + 1) % fc.deck.length; fc.flipped = false; renderFlash(); });
+$('#fcPrev').addEventListener('click', () => { if(!fc.deck.length) return; fc.idx = (fc.idx - 1 + fc.deck.length) % fc.deck.length; fc.flipped = false; renderFlash(); });
+$('#fcShuffle').addEventListener('click', () => { fc.deck = shuffle(fc.deck); fc.idx = 0; fc.flipped = false; renderFlash(); toast('🔀 Đã xáo trộn thẻ'); });
+$('#fcKnow').addEventListener('click', () => {
+  if(!fc.deck.length) return;
+  const v = fc.deck[fc.idx];
+  state.known[v.id] = true; state.learned[v.id] = true; delete state.review[v.id];
+  save(); updateCounters(); renderHome();
+  toast('✓ Đã đánh dấu biết: ' + v.w);
+  renderFlash();
+});
+$('#fcReview').addEventListener('click', () => {
+  if(!fc.deck.length) return;
+  const v = fc.deck[fc.idx];
+  state.review[v.id] = true; delete state.known[v.id];
+  save(); updateCounters(); renderHome();
+  toast('↺ Cần ôn lại: ' + v.w);
+  renderFlash();
+});
+$('#fcSpeak').addEventListener('click', () => {
+  if(!fc.deck.length) return;
+  const v = fc.deck[fc.idx];
+  playWord(v.id, v.w);
+});
+$('#fcModes').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if(!c) return;
+  fc.mode = c.dataset.m;
+  $$('#fcModes .chip').forEach(x => x.classList.toggle('active', x === c));
+  fc.deck = deckFor(fc.mode); fc.idx = 0; fc.flipped = false;
+  renderFlash();
+});
+document.addEventListener('keydown', e => {
+  const flashActive = document.getElementById('view-flash').classList.contains('active');
+  if(!flashActive) return;
+  if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if(e.key === 'ArrowRight'){ $('#fcNext').click(); }
+  if(e.key === 'ArrowLeft'){ $('#fcPrev').click(); }
+  if(e.key === ' '){ e.preventDefault(); $('#fcFlip').click(); }
+});
+
+/* =========================================================
+   12. PRONUNCIATION VIEW
+   ========================================================= */
+function renderPron(){
+  const q = ($('#pronSearch').value || '').toLowerCase().trim();
+  const list = VOCAB.filter(v => !q || (v.w + ' ' + v.ipa + ' ' + v.vi).toLowerCase().includes(q));
+  $('#pronList').innerHTML = list.map(v => `
+    <div class="card" style="padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
+        <div>
+          <b style="font-size:1.02rem;color:var(--primary-dark)">${esc(v.w)}</b>
+          <div style="font-family:ui-monospace,Menlo,monospace;color:var(--soft);font-size:.86rem">${esc(v.ipa)}</div>
+          <div class="muted small">${esc(v.vi)}</div>
+        </div>
+        <button class="btn primary" aria-label="Nghe phát âm ${esc(v.w)}" onclick="playWord(${attrJs(v.id)},${attrJs(v.w)})">🔊 Listen</button>
+      </div>
+    </div>
+  `).join('') || '<p class="muted">Không tìm thấy.</p>';
+}
+$('#pronSearch').addEventListener('input', renderPron);
+
+/* =========================================================
+   13. EXERCISES
+   ========================================================= */
+let exFilter = 'all';
+function renderExercises(){
+  const wrap = $('#exWrap');
+  let html = '';
+  const keys = exFilter === 'all' ? Object.keys(EX) : [exFilter];
+  keys.forEach(key => {
+    const e = EX[key];
+    html += `<div class="card"><h3>${esc(e.title)}</h3><p class="muted">${esc(e.sub)}</p>`;
+
+    if(e.type === 'rewrite' || e.type === 'error'){
+      e.items.forEach(it => {
+        const saved = state.answers[key + '-' + it.n] || '';
+        html += `<div class="ex-item">
+          <p class="ex-prompt"><span class="ex-num">${it.n}</span><span>${esc(it.prompt)}</span></p>`;
+        if(it.given){
+          html += `<p class="fb ok" style="display:inline-block"><b>Ví dụ đã cho:</b> <u>${esc(it.answer)}</u></p>`;
+        }else{
+          html += `<div class="ex-row">
+            <input type="text" class="ex-input" id="in-${key}-${it.n}" value="${esc(saved)}" placeholder="Viết câu trả lời của bạn..." aria-label="Câu trả lời ${key} câu ${it.n}">
+            <button class="btn primary" onclick="checkItem(${attrJs(key)},${it.n})">Check</button>
+            <button class="btn ghost" onclick="showAnswer(${attrJs(key)},${it.n})">Xem đáp án</button>
+          </div>
+          <div class="ex-fb" id="fb-${key}-${it.n}"></div>`;
+        }
+        html += `</div>`;
+      });
+    }
+
+    if(e.type === 'blank'){
+      e.blocks.forEach(b => {
+        let t = esc(b);
+        e.items.forEach(it => { t = t.replace('{' + it.n + '}', `[[${it.n}]]`); });
+        t = t.replace(/\[\[(\d+)\]\]/g, (m, n) => {
+          const saved = state.answers[key + '-' + n] || '';
+          return `<input type="text" class="blankinput" id="in-${key}-${n}" value="${esc(saved)}" aria-label="Chỗ trống ${n}" autocomplete="off">`;
+        });
+        html += `<div class="msgblock">${t}</div>`;
+      });
+      html += `<div class="btnrow" style="margin-bottom:8px"><button class="btn primary" onclick="checkAllBlanks(${attrJs(key)})">Check tất cả</button></div>`;
+      e.items.forEach(it => { html += `<div class="ex-fb" id="fb-${key}-${it.n}"></div>`; });
+    }
+
+    if(e.type === 'open' || e.type === 'personal'){
+      e.items.forEach(it => {
+        const saved = state.answers[key + '-' + it.n] || '';
+        html += `<div class="ex-item">
+          <p class="ex-prompt"><span class="ex-num">${it.n}</span><span>${esc(it.prompt)}</span></p>
+          <textarea class="ex-area" id="in-${key}-${it.n}" placeholder="Viết câu trả lời của bạn..." aria-label="Câu trả lời ${key} câu ${it.n}">${esc(saved)}</textarea>
+          <div class="btnrow" style="margin-top:8px">
+            <button class="btn primary" onclick="saveOpen(${attrJs(key)},${it.n})">Lưu câu trả lời</button>
+            <button class="btn ghost" onclick="showAnswer(${attrJs(key)},${it.n})">Xem đáp án tham khảo</button>
+          </div>
+          <div class="ex-fb" id="fb-${key}-${it.n}"></div>
+        </div>`;
+      });
+    }
+
+    if(e.rule) html += `<div class="refbox">${esc(e.rule)}</div>`;
+    if(e.glossary){
+      html += `<div class="refbox"><b>Giải thích từ vựng</b><br>` +
+        e.glossary.map(([a,b]) => `• <b>${esc(a)}</b> → ${esc(b)}`).join('<br>') + `</div>`;
+    }
+    html += `</div>`;
+  });
+  wrap.innerHTML = html;
+}
+$('#exFilterRow').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  exFilter = b.dataset.exf;
+  $$('#exFilterRow button').forEach(x => { x.classList.remove('primary'); });
+  b.classList.add('primary');
+  renderExercises();
+});
+
+function getExItem(key, n){ return EX[key].items.find(i => i.n === n); }
+
+function recordExercise(key, n, ok, question, userAns, correctAns, exp){
+  state.exItems[key + '-' + n] = ok;
+  let c = 0;
+  EX[key].items.forEach(i => { if(state.exItems[key + '-' + i.n]) c++; });
+  state.ex[key] = { correct:c, total:EX[key].items.length };
+  if(!ok){
+    addMistake({
+      id: key + '-' + n,
+      src: 'Exercise ' + key,
+      question: question,
+      user: userAns,
+      correct: correctAns,
+      exp: exp
+    });
+  }else{
+    removeMistake(key + '-' + n);
+  }
+  save(); updateCounters(); renderHome();
+}
+
+function checkItem(key, n){
+  const it = getExItem(key, n);
+  const input = document.getElementById(`in-${key}-${n}`);
+  const fb = document.getElementById(`fb-${key}-${n}`);
+  const val = input.value;
+  if(!norm(val)){ fb.innerHTML = '<div class="fb warn">Hãy nhập câu trả lời trước.</div>'; return; }
+
+  let ok = false;
+  const nv = norm(val);
+  if(it.must){
+    const hasAll = it.must.every(m => nv.includes(norm(m)));
+    const hasBad = (it.mustNot || []).some(m => nv.includes(norm(m)));
+    ok = hasAll && !hasBad;
+  }else if(it.key){
+    ok = nv.includes(norm(it.key));
+  }else if(it.accept){
+    ok = it.accept.some(a => nv === norm(a));
+  }
+
+  state.answers[key + '-' + n] = val;
+  recordExercise(key, n, ok, it.prompt, val, it.answer, it.exp);
+
+  fb.innerHTML = `<div class="fb ${ok ? 'ok' : 'bad'}">
+    <b>${ok ? '✅ Correct!' : '❌ Chưa đúng.'}</b><br>
+    <span class="ans">Đáp án đúng:</span> ${esc(it.answer)}<br>
+    <b>Giải thích:</b> ${esc(it.exp)}<br>
+    <b>Giải thích tiếng Việt:</b> ${esc(it.vi || it.exp)}
+    <div style="margin-top:8px">
+      <button class="btn sm" onclick="playSentence(${attrJs(it.answer)})">🔊 Nghe đáp án</button>
+    </div>
+  </div>`;
+}
+
+function checkAllBlanks(key){
+  EX[key].items.forEach(it => {
+    const input = document.getElementById(`in-${key}-${it.n}`);
+    const fb = document.getElementById(`fb-${key}-${it.n}`);
+    const val = input.value;
+    if(!norm(val)){ fb.innerHTML = '<div class="fb warn">Chỗ trống ' + it.n + ': chưa trả lời.</div>'; return; }
+    const ok = it.accept.some(a => norm(val) === norm(a));
+    state.answers[key + '-' + it.n] = val;
+    recordExercise(key, it.n, ok, 'Chỗ trống ' + it.n, val, it.answer, it.exp);
+    fb.innerHTML = `<div class="fb ${ok ? 'ok' : 'bad'}">
+      <b>${it.n}. ${ok ? '✅ Correct!' : '❌ Chưa đúng.'}</b> — Đáp án: <span class="ans">${esc(it.answer)}</span><br>
+      <b>Giải thích:</b> ${esc(it.exp)}<br>
+      <b>Tiếng Việt:</b> ${esc(it.vi)}
+    </div>`;
+  });
+}
+
+function saveOpen(key, n){
+  const input = document.getElementById(`in-${key}-${n}`);
+  state.answers[key + '-' + n] = input.value;
+  save();
+  document.getElementById(`fb-${key}-${n}`).innerHTML = '<div class="fb ok">💾 Đã lưu câu trả lời của bạn (bài mở — không chấm đúng/sai).</div>';
+}
+
+function showAnswer(key, n){
+  const it = getExItem(key, n);
+  const fb = document.getElementById(`fb-${key}-${n}`);
+  let extra = '';
+  if(it.exp) extra += `<br><b>Giải thích:</b> ${esc(it.exp)}`;
+  if(it.vi) extra += `<br><b>Tiếng Việt:</b> ${esc(it.vi)}`;
+  const note = (EX[key].type === 'open' || EX[key].type === 'personal')
+    ? '<br><span class="muted">⚠️ Đây là đáp án <b>tham khảo</b> — bài này có nhiều đáp án hợp lý.</span>' : '';
+  fb.innerHTML = `<div class="fb warn">
+    <b>Đáp án tham khảo:</b> ${esc(it.answer)}${extra}${note}
+    <div style="margin-top:8px"><button class="btn sm" onclick="playSentence(${attrJs(it.answer)})">🔊 Nghe</button></div>
+  </div>`;
+}
+
+function playSentence(text){
+  speakTTS(text.replace(/\s*\/\s*/g, ' or '), text.slice(0, 40) + '…');
+}
+
+/* =========================================================
+   14. MISTAKES
+   ========================================================= */
+function addMistake(m){
+  const i = state.mistakes.findIndex(x => x.id === m.id);
+  m.ts = Date.now();
+  if(i >= 0) state.mistakes[i] = m; else state.mistakes.unshift(m);
+  if(state.mistakes.length > 200) state.mistakes.length = 200;
+  save(); updateCounters();
+}
+function removeMistake(id){
+  const before = state.mistakes.length;
+  state.mistakes = state.mistakes.filter(x => x.id !== id);
+  if(state.mistakes.length !== before){ save(); updateCounters(); }
+}
+function renderMistakes(){
+  const list = state.mistakes;
+  if(!list.length){
+    $('#mistakesList').innerHTML = '<div class="card"><p class="muted">🎉 Chưa có lỗi nào được ghi lại. Hãy làm Quiz hoặc Exercises — câu sai sẽ tự động xuất hiện ở đây.</p></div>';
+    return;
+  }
+  $('#mistakesList').innerHTML = list.map(m => `
+    <div class="mistake">
+      <p class="muted small">${esc(m.src)}</p>
+      <div class="q">${esc(m.question)}</div>
+      <p class="u">Bạn trả lời: <b>${esc(m.user)}</b></p>
+      <p class="c">Đáp án đúng: <b>${esc(m.correct)}</b></p>
+      <p><b>Giải thích:</b> ${esc(m.exp)}</p>
+      <div class="btnrow">
+        <button class="btn sm" onclick="playSentence(${attrJs(m.correct)})">🔊 Nghe đáp án</button>
+        <button class="btn sm ghost" onclick="reviewMistake(${attrJs(m.id)})">🔁 Review</button>
+      </div>
+    </div>
+  `).join('');
+}
+function reviewMistake(id){
+  const m = state.mistakes.find(x => x.id === id);
+  if(!m) return;
+  $('#modalBody').innerHTML = `
+    <h2 id="modalTitle">🔁 Review</h2>
+    <p class="muted">${esc(m.src)}</p>
+    <div class="mrow"><div class="lbl">Câu hỏi</div><div>${esc(m.question)}</div></div>
+    <div class="mrow"><div class="lbl">Bạn đã trả lời</div><div style="color:var(--bad)">${esc(m.user)}</div></div>
+    <div class="mrow"><div class="lbl">Đáp án đúng</div><div style="color:var(--ok);font-weight:700">${esc(m.correct)}</div></div>
+    <div class="mrow"><div class="lbl">Giải thích</div><div>${esc(m.exp)}</div></div>
+    <div class="btnrow" style="margin-top:14px">
+      <button class="btn primary" onclick="playSentence(${attrJs(m.correct)})">🔊 Nghe đáp án</button>
+      <button class="btn ok" onclick="removeMistake(${attrJs(m.id)});closeModal();renderMistakes();">✓ Đã hiểu, xoá khỏi danh sách</button>
+    </div>`;
+  $('#modalBg').hidden = false;
+}
+$('#clearMistakesBtn').addEventListener('click', () => {
+  if(confirm('Xoá toàn bộ danh sách lỗi?')){ state.mistakes = []; save(); updateCounters(); renderMistakes(); toast('Đã xoá danh sách lỗi'); }
+});
+$('#reviewAllBtn').addEventListener('click', () => {
+  if(!state.mistakes.length){ toast('Chưa có lỗi nào để ôn.'); return; }
+  reviewMistake(state.mistakes[0].id);
+});
+
+/* =========================================================
+   15. QUIZ
+   ========================================================= */
+let Q = null;
+function renderQuizIntro(){
+  $('#quizIntro').hidden = false;
+  $('#quizBox').hidden = true;
+}
+$('#quizStart').addEventListener('click', startQuiz);
+
+function startQuiz(){
+  const list = shuffle(QUIZ).map(q => {
+    const idx = q.o.map((t,i)=>({t,i}));
+    const sh = shuffle(idx);
+    return {
+      q: q.q,
+      e: q.e,
+      opts: sh.map(x => x.t),
+      a: sh.findIndex(x => x.i === q.a)
+    };
+  });
+  Q = { list, idx:0, score:0, selected:null, answered:false };
+  $('#quizIntro').hidden = true;
+  $('#quizBox').hidden = false;
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = Q.list[Q.idx];
+  const total = Q.list.length;
+  const letters = ['A','B','C','D'];
+  $('#quizBox').innerHTML = `
+    <div class="card">
+      <div class="qprog">
+        <span class="muted">Câu ${Q.idx + 1} / ${total}</span>
+        <span class="muted">Đúng: <b>${Q.score}</b></span>
+      </div>
+      <div class="bigbar"><span style="width:${((Q.idx)/total)*100}%"></span></div>
+      <h3 style="margin-top:14px">${esc(q.q)}</h3>
+      <div id="quizOpts" style="margin-top:12px">
+        ${q.opts.map((o,i) => `<button class="opt" data-i="${i}" aria-label="Lựa chọn ${letters[i]}: ${esc(o)}"><span class="lt">${letters[i]}</span><span>${esc(o)}</span></button>`).join('')}
+      </div>
+      <div id="quizFb"></div>
+      <div class="btnrow" style="margin-top:12px">
+        <button class="btn primary" id="quizNext" disabled>Tiếp theo ›</button>
+        <button class="btn ghost" id="quizQuit">Kết thúc</button>
+      </div>
+    </div>`;
+  $('#quizOpts').addEventListener('click', e => {
+    const b = e.target.closest('.opt');
+    if(b) answerQuestion(parseInt(b.dataset.i, 10));
+  });
+  $('#quizNext').addEventListener('click', nextQuestion);
+  $('#quizQuit').addEventListener('click', finishQuiz);
+  Q.selected = null; Q.answered = false;
+}
+
+function answerQuestion(i){
+  if(Q.answered) return;
+  Q.answered = true; Q.selected = i;
+  const q = Q.list[Q.idx];
+  const correct = i === q.a;
+  $$('#quizOpts .opt').forEach((b, k) => {
+    b.disabled = true;
+    if(k === q.a) b.classList.add('correct');
+    if(k === i && !correct) b.classList.add('wrong');
+  });
+  if(correct) Q.score++;
+  state.quiz.answered++; if(correct) state.quiz.correct++;
+  save();
+
+  if(!correct){
+    addMistake({
+      id: 'quiz-' + norm(q.q).slice(0, 60),
+      src: 'Quiz',
+      question: q.q,
+      user: q.opts[i],
+      correct: q.opts[q.a],
+      exp: q.e
+    });
+  }
+  $('#quizFb').innerHTML = `<div class="fb ${correct ? 'ok' : 'bad'}" style="margin-top:12px">
+    <b>${correct ? '✅ Correct!' : '❌ Incorrect.'}</b><br>
+    Đáp án đúng: <b>${esc(q.opts[q.a])}</b><br>
+    <b>Giải thích:</b> ${esc(q.e)}
+  </div>`;
+  $('#quizNext').disabled = false;
+  updateCounters(); renderHome();
+}
+
+function nextQuestion(){
+  Q.idx++;
+  if(Q.idx >= Q.list.length){ finishQuiz(); return; }
+  renderQuestion();
+}
+
+function finishQuiz(){
+  const total = Q.idx + (Q.answered ? 1 : 0);
+  const answered = state.quiz.answered;
+  const acc = answered ? Math.round(state.quiz.correct / answered * 100) : 0;
+  $('#quizBox').innerHTML = `
+    <div class="card">
+      <h2>🎉 Kết quả</h2>
+      <p>Bạn trả lời đúng <b>${Q.score}</b> / <b>${Q.list.length}</b> câu trong lượt này.</p>
+      <div class="bigbar"><span style="width:${(Q.score / Q.list.length * 100)}%"></span></div>
+      <p class="muted">Độ chính xác tổng (mọi lượt đã làm): <b>${acc}%</b> — ${state.quiz.correct}/${answered} câu.</p>
+      <div class="btnrow">
+        <button class="btn primary" id="quizAgain">Làm lại (xáo trộn mới)</button>
+        <button class="btn" onclick="go('mistakes')">❌ Xem lỗi sai</button>
+        <button class="btn ghost" onclick="go('progress')">📊 Xem tiến độ</button>
+      </div>
+    </div>`;
+  $('#quizAgain').addEventListener('click', startQuiz);
+  updateCounters(); renderHome();
+}
+
+/* =========================================================
+   16. PROGRESS
+   ========================================================= */
+function renderProgress(){
+  const s = stats();
+  $('#progOverallBar').style.width = s.overall + '%';
+  $('#progOverallPct').textContent = s.overall + '%';
+
+  $('#progressStats').innerHTML = [
+    ['Vocabulary learned', s.learned + ' / ' + s.total, Math.round(s.learned/s.total*100)],
+    ['Flashcards completed', s.known + ' / ' + s.total, Math.round(s.known/s.total*100)],
+    ['Quiz accuracy', s.quizAcc + '%', s.quizAcc],
+    ['Exercises', s.exCorrect + ' / ' + s.exTotal, Math.round(s.exCorrect/s.exTotal*100)],
+    ['Mistakes', String(s.mistakes), null],
+    ['Review items', String(s.review), null]
+  ].map(([k,v,pct]) => `
+    <div class="stat">
+      <div class="k">${esc(k)}</div>
+      <div class="v">${esc(v)}</div>
+      ${pct !== null ? `<div class="minibar"><span style="width:${pct}%"></span></div>` : ''}
+    </div>`).join('');
+
+  const rows = [
+    ['Vocabulary learned', s.learned + ' / ' + s.total],
+    ['Flashcards seen', s.flashSeen + ' / ' + s.total],
+    ['Flashcards marked "Know"', s.known + ' / ' + s.total],
+    ['Words marked "Need review"', s.review],
+    ['Quiz questions answered', s.quizAnswered],
+    ['Quiz correct', s.quizCorrect],
+    ['Quiz accuracy', s.quizAcc + '%'],
+    ['Exercise answers correct', s.exCorrect + ' / ' + s.exTotal],
+    ['Mistakes saved', s.mistakes],
+    ['Sections visited', countKeys(state.sections)]
+  ];
+  $('#progressDetails').innerHTML = '<h3>Chi tiết</h3>' +
+    rows.map(([k,v]) => `<div class="mrow" style="display:flex;justify-content:space-between;gap:10px"><span class="muted">${esc(k)}</span><b>${esc(v)}</b></div>`).join('');
+}
+$('#resetProgress').addEventListener('click', () => {
+  if(confirm('Xoá toàn bộ tiến độ học tập? Hành động này không thể hoàn tác.')){
+    state = defaultState();
+    save();
+    updateCounters(); renderHome(); renderVocab(); renderMistakes(); renderProgress();
+    fc = { deck:[], idx:0, flipped:false, mode:fc.mode };
+    toast('Đã xoá toàn bộ tiến độ');
+  }
+});
+
+/* =========================================================
+   17. GLOBAL SEARCH
+   ========================================================= */
+const globalSearch = $('#globalSearch');
+globalSearch.addEventListener('input', () => {
+  const q = globalSearch.value.trim();
+  if(q.length >= 2){
+    if(!document.getElementById('view-vocab').classList.contains('active')){
+      $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-vocab'));
+      $$('.navitem').forEach(n => n.classList.toggle('active', n.dataset.view === 'vocab'));
+    }
+    $('#vocabSearch').value = q;
+    vocabFilter = 'all';
+    $$('#vocabChips .chip').forEach(x => x.classList.toggle('active', x.dataset.f === 'all'));
+    renderVocab();
+    updateCounters();
+  }else if(q.length === 0){
+    $('#vocabSearch').value = '';
+    renderVocab();
+  }
+});
+globalSearch.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ globalSearch.value = ''; $('#vocabSearch').value = ''; renderVocab(); }
+});
+
+/* =========================================================
+   18. INIT
+   ========================================================= */
+(function init(){
+  renderHome();
+  renderVocab();
+  renderExercises();
+  renderPron();
+  renderMistakes();
+  renderProgress();
+  updateCounters();
+  if('speechSynthesis' in window){
+    setTimeout(()=>{ try{ speechSynthesis.getVoices(); }catch(e){} }, 300);
+  }
+})();
+</script>
+</body>
+</html>
